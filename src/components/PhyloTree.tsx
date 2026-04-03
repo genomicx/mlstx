@@ -15,6 +15,8 @@ export function PhyloTree({ newick, alignment }: PhyloTreeProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const treeRef = useRef<any>(null)
   const [error, setError] = useState<string | null>(null)
+  const [showLabels, setShowLabels] = useState(true)
+  const [alignLabels, setAlignLabels] = useState(false)
 
   useEffect(() => {
     if (!containerRef.current || !newick) return
@@ -41,8 +43,9 @@ export function PhyloTree({ newick, alignment }: PhyloTreeProps) {
           source: newick,
           size: { width: rect.width || 800, height: 500 },
           padding: 20,
-          showLabels: true,
-          showLeafLabels: true,
+          showLabels: showLabels,
+          showLeafLabels: showLabels,
+          alignLabels: alignLabels,
           showBranchLengths: false,
         }
       )
@@ -61,7 +64,7 @@ export function PhyloTree({ newick, alignment }: PhyloTreeProps) {
         treeRef.current = null
       }
     }
-  }, [newick])
+  }, [newick, showLabels, alignLabels])
 
   useEffect(() => {
     const handleResize = () => {
@@ -90,6 +93,18 @@ export function PhyloTree({ newick, alignment }: PhyloTreeProps) {
       <div className="tree-header">
         <h2>Phylogenetic Tree</h2>
         <div className="results-actions">
+          <button
+            className={`export-button${showLabels ? ' active' : ''}`}
+            onClick={() => setShowLabels((v) => !v)}
+          >
+            {showLabels ? 'Hide Labels' : 'Show Labels'}
+          </button>
+          <button
+            className={`export-button${alignLabels ? ' active' : ''}`}
+            onClick={() => setAlignLabels((v) => !v)}
+          >
+            Align Labels
+          </button>
           <button className="export-button" onClick={handleExportNewick}>
             Export Newick
           </button>

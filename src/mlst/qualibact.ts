@@ -58,36 +58,32 @@ const SCHEME_TO_SPECIES: Record<string, string> = {
   spyogenes: 'Streptococcus pyogenes',
 }
 
-/** Which summary.csv metrics map to AssemblyStats fields, and any unit conversion */
-const METRIC_MAP: Record<
-  string,
-  { key: keyof AssemblyStats; label: string; scale?: number }
-> = {
-  N50:          { key: 'n50',         label: 'N50' },
-  number:       { key: 'contigCount', label: '# contigs' },
-  Genome_Size:  { key: 'totalLength', label: 'Genome size (bp)' },
-  // GC_Content stored as fraction (0.506); gcPercent is % (50.6) → multiply by 100
-  GC_Content:   { key: 'gcPercent',   label: 'GC (%)', scale: 100 },
+/** Which {Species}_metrics.csv metric names map to AssemblyStats fields.
+ *  GC_Content in metrics.csv is already in % (50.0–52.0), same as gcPercent. */
+const METRIC_MAP: Record<string, { key: keyof AssemblyStats; label: string }> = {
+  N50:           { key: 'n50',         label: 'N50' },
+  no_of_contigs: { key: 'contigCount', label: '# contigs' },
+  Genome_Size:   { key: 'totalLength', label: 'Genome size (bp)' },
+  GC_Content:    { key: 'gcPercent',   label: 'GC (%)' },
 }
 
 /** Cache per species to avoid re-fetching */
 const cache = new Map<string, QCCheck[] | null>()
 
-/** Convert "Genus species" → URL path component "Genus/Genus_species" */
-function speciesPath(species: string): string {
+/** Convert "Genus species" → URL path "Genus/Genus_species/Genus_species_metrics.csv" */
+function metricsUrl(species: string): string {
   const parts = species.trim().split(/\s+/)
   const genus = parts[0]
   const epithet = parts[1] ?? ''
-  return `${genus}/${genus}_${epithet}`
+  const slug = `${genus}_${epithet}`
+  return `${QUALIBACT_BASE}/${genus}/${slug}/${slug}_metrics.csv`
 }
 
 async function fetchChecks(
   stats: AssemblyStats,
   species: string,
 ): Promise<QCCheck[]> {
-  const path = speciesPath(species)
-  const url = `${QUALIBACT_BASE}/${path}/summary.csv`
-
+  const url = metricsUrl(species)
   const res = await fetch(url)
   if (!res.ok) return []
 
@@ -95,10 +91,11 @@ async function fetchChecks(
   const lines = text.trim().split('\n')
   if (lines.length < 2) return []
 
+  // Format: species,metric,lower_bounds,upper_bounds
   const header = lines[0].split(',')
   const metricIdx = header.indexOf('metric')
-  const lowerIdx = header.indexOf('lower_bound')
-  const upperIdx = header.indexOf('upper_bound')
+  const lowerIdx = header.indexOf('lower_bounds')
+  const upperIdx = header.indexOf('upper_bounds')
   if (metricIdx < 0 || lowerIdx < 0 || upperIdx < 0) return []
 
   const checks: QCCheck[] = []
@@ -111,15 +108,14 @@ async function fetchChecks(
 
     const rawLower = cols[lowerIdx]?.trim()
     const rawUpper = cols[upperIdx]?.trim()
-    const scale = mapping.scale ?? 1
-    const value = (stats[mapping.key] as number) / scale
+    const value = stats[mapping.key] as number
 
     if (rawLower && !isNaN(Number(rawLower))) {
       const lower = Number(rawLower)
       checks.push({
         field: mapping.label,
-        value: stats[mapping.key] as number,
-        threshold: `>= ${(lower * scale).toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
+        value,
+        threshold: `>= ${lower.toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
         status: value >= lower ? 'pass' : 'fail',
       })
     }
@@ -128,8 +124,8 @@ async function fetchChecks(
       const upper = Number(rawUpper)
       checks.push({
         field: mapping.label,
-        value: stats[mapping.key] as number,
-        threshold: `<= ${(upper * scale).toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
+        value,
+        threshold: `<= ${upper.toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
         status: value <= upper ? 'pass' : 'fail',
       })
     }

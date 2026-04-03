@@ -129,7 +129,8 @@
   transition: all 0.2s;
 }
 
-.export-button:hover {
+.export-button:hover,
+.export-button.active {
   background: var(--gx-accent);
   color: var(--gx-text-inverted);
 }
