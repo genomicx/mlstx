@@ -71,20 +71,23 @@ function AnalysisPage() {
   const runWithScheme = useCallback(async (uploadedFiles: File[], scheme: string) => {
     setRunning(true)
     setError('')
-    setResults([])
     setNewick('')
     setAlignment('')
     setTreeError('')
     setLogLines([])
-    setQcResults([])
-    setStatsMap({})
     setProgress('Loading scheme data...')
     setProgressPct(0)
 
     try {
       const data = await loadSchemeData(scheme)
       setSchemeData(data)
-      setLoci(data.scheme.loci)
+      setLoci((prev) => {
+        const combined = [...prev]
+        for (const l of data.scheme.loci) {
+          if (!combined.includes(l)) combined.push(l)
+        }
+        return combined
+      })
 
       setProgress('Parsing FASTA files...')
       const parsedFiles = await Promise.all(uploadedFiles.map(parseFastaFile))
@@ -94,19 +97,26 @@ function AnalysisPage() {
         setProgressPct(pct)
       }, options)
 
-      setResults(mlstResults)
+      // Append, replacing any existing entries with the same filename
+      setResults((prev) => {
+        const next = prev.filter((r) => !mlstResults.some((nr) => nr.filename === r.filename))
+        return [...next, ...mlstResults]
+      })
 
-      // Compute assembly stats + QC in background
+      // Compute assembly stats + QC
       const newStatsMap: Record<string, AssemblyStats> = {}
       for (const pf of parsedFiles) {
         newStatsMap[pf.filename] = computeStats(pf)
       }
-      setStatsMap(newStatsMap)
+      setStatsMap((prev) => ({ ...prev, ...newStatsMap }))
 
       const qcs = await Promise.all(
         mlstResults.map((r) => runQC(newStatsMap[r.filename], r.scheme)),
       )
-      setQcResults(qcs)
+      setQcResults((prev) => {
+        const next = prev.filter((q) => !qcs.some((nq) => nq.filename === q.filename))
+        return [...next, ...qcs]
+      })
       setProgress('')
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
@@ -119,20 +129,14 @@ function AnalysisPage() {
   const runPerFile = useCallback(async (uploadedFiles: File[]) => {
     setRunning(true)
     setError('')
-    setResults([])
     setNewick('')
     setAlignment('')
     setTreeError('')
     setLogLines([])
-    setSchemeData(null)
-    setLoci([])
-    setQcResults([])
-    setStatsMap({})
 
-    const allResults: MLSTResult[] = []
-    let combinedLoci: string[] = []
+    const batchResults: MLSTResult[] = []
     const newStatsMap: Record<string, AssemblyStats> = {}
-    const allQc: QCResult[] = []
+    const batchQc: QCResult[] = []
 
     try {
       for (let i = 0; i < uploadedFiles.length; i++) {
@@ -162,10 +166,14 @@ function AnalysisPage() {
         setProgress(`${filePrefix}: loading scheme ${scheme}...`)
         const data = await loadSchemeData(scheme)
 
-        // Accumulate loci (may differ between files/schemes)
-        for (const locus of data.scheme.loci) {
-          if (!combinedLoci.includes(locus)) combinedLoci.push(locus)
-        }
+        setSchemeData(data)
+        setLoci((prev) => {
+          const combined = [...prev]
+          for (const locus of data.scheme.loci) {
+            if (!combined.includes(locus)) combined.push(locus)
+          }
+          return combined
+        })
 
         const parsed = await parseFastaFile(file)
         const fileResults = await runMLST([parsed], data, (msg, pct) => {
@@ -174,20 +182,26 @@ function AnalysisPage() {
           setProgressPct(overallPct)
         }, options)
 
-        allResults.push(...fileResults)
+        batchResults.push(...fileResults)
 
         // Compute assembly stats + QC for this file
         const stats = computeStats(parsed)
         newStatsMap[parsed.filename] = stats
 
         const qc = await runQC(stats, scheme)
-        allQc.push(qc)
+        batchQc.push(qc)
 
         // Batch UI updates every 5 files to reduce re-renders on large uploads
         if ((i + 1) % 5 === 0 || i === uploadedFiles.length - 1) {
-          setResults([...allResults])
-          setStatsMap({ ...newStatsMap })
-          setQcResults([...allQc])
+          setResults((prev) => {
+            const next = prev.filter((r) => !batchResults.some((nr) => nr.filename === r.filename))
+            return [...next, ...batchResults]
+          })
+          setStatsMap((prev) => ({ ...prev, ...newStatsMap }))
+          setQcResults((prev) => {
+            const next = prev.filter((q) => !batchQc.some((nq) => nq.filename === q.filename))
+            return [...next, ...batchQc]
+          })
         }
 
         // Keep the last scheme's data for tree building
@@ -204,30 +218,43 @@ function AnalysisPage() {
   }, [options])
 
   const handleFilesChange = useCallback(async (newFiles: File[]) => {
-    setFiles(newFiles)
-    if (newFiles.length === 0) return
+    // Detect which files were added and which were removed
+    const addedFiles = newFiles.filter(
+      (f) => !files.some((existing) => existing.name === f.name && existing.size === f.size),
+    )
+    const removedNames = new Set(
+      files
+        .filter((f) => !newFiles.some((nf) => nf.name === f.name && nf.size === f.size))
+        .map((f) => f.name),
+    )
 
-    // Reset results and tree
-    setResults([])
-    setNewick('')
-    setAlignment('')
-    setTreeError('')
-    setLogLines([])
+    setFiles(newFiles)
+
+    // Remove results for any files removed from the uploader
+    if (removedNames.size > 0) {
+      setResults((prev) => prev.filter((r) => !removedNames.has(r.filename)))
+      setQcResults((prev) => prev.filter((r) => !removedNames.has(r.filename)))
+      setStatsMap((prev) => {
+        const next = { ...prev }
+        for (const name of removedNames) delete next[name]
+        return next
+      })
+      setNewick('')
+      setAlignment('')
+    }
+
+    if (addedFiles.length === 0) return
+
     setError('')
-    setDetectedScheme('')
-    setQcResults([])
-    setStatsMap({})
 
     const override = manualSchemeRef.current
     if (override) {
-      // User pre-selected a scheme — apply to all files
-      await runWithScheme(newFiles, override)
+      await runWithScheme(addedFiles, override)
       return
     }
 
-    // Auto-detect per file (tseemann/mlst style: each genome gets its own scheme)
-    await runPerFile(newFiles)
-  }, [runWithScheme, runPerFile])
+    await runPerFile(addedFiles)
+  }, [files, runWithScheme, runPerFile])
 
   const handleSchemeChange = useCallback((scheme: string) => {
     setSelectedScheme(scheme)
@@ -238,6 +265,19 @@ function AnalysisPage() {
     if (files.length === 0 || !selectedScheme) return
     await runWithScheme(files, selectedScheme)
   }, [files, selectedScheme, runWithScheme])
+
+  const handleClearResults = useCallback(() => {
+    setResults([])
+    setQcResults([])
+    setStatsMap({})
+    setLoci([])
+    setNewick('')
+    setAlignment('')
+    setFiles([])
+    setDetectedScheme('')
+    manualSchemeRef.current = ''
+    setSelectedScheme('')
+  }, [])
 
   const handleRemoveResult = useCallback((filename: string) => {
     setResults((prev) => prev.filter((r) => r.filename !== filename))
@@ -392,6 +432,9 @@ function AnalysisPage() {
               </button>
               <button className="export-button" onClick={() => exportJSON(results)}>
                 Export JSON
+              </button>
+              <button className="clear-button" onClick={handleClearResults} title="Clear all results">
+                Clear
               </button>
               {results.length >= 2 && (
                 <button

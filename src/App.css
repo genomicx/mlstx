@@ -135,6 +135,25 @@
   color: var(--gx-text-inverted);
 }
 
+.clear-button {
+  padding: 0.45rem 1rem;
+  background: transparent;
+  color: var(--gx-text-muted);
+  border: 1px solid var(--gx-border);
+  border-radius: var(--gx-radius);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-button:hover {
+  color: var(--gx-error, #ef4444);
+  border-color: var(--gx-error, #ef4444);
+  background: rgba(239, 68, 68, 0.08);
+}
+
 /* ── Options panel ───────────────────────────── */
 .options-bar {
   margin-bottom: 1rem;

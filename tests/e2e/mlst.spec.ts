@@ -17,7 +17,7 @@ test.describe('MLST e2e — E. coli Achtman genome', () => {
 
     // Wait for results section OR error — BLAST WASM + large allele DB can take several minutes
     await expect(
-      page.locator('.results, .error')
+      page.locator('.results, .error').first()
     ).toBeVisible({ timeout: 240_000 })
 
     // If results visible, check table has a row
