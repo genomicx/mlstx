@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { NavBar, AppFooter, LogConsole, FileUpload, ProgressBar } from '@genomicx/ui'
 import { SchemeSelector } from './components/SchemeSelector'
@@ -26,7 +26,7 @@ function AnalysisPage() {
   const [loci, setLoci] = useState<string[]>([])
   const [schemeData, setSchemeData] = useState<SchemeData | null>(null)
   const [error, setError] = useState('')
-  const [detecting, setDetecting] = useState(false)
+  const [detectedScheme, setDetectedScheme] = useState('')
 
   // Tree state
   const [newick, setNewick] = useState('')
@@ -36,6 +36,9 @@ function AnalysisPage() {
   const [treeProgressPct, setTreeProgressPct] = useState(0)
   const [treeError, setTreeError] = useState('')
   const [logLines, setLogLines] = useState<string[]>([])
+
+  // Track whether scheme was manually overridden
+  const manualSchemeRef = useRef('')
 
   useEffect(() => {
     fetchSchemeList()
@@ -49,34 +52,7 @@ function AnalysisPage() {
       })
   }, [])
 
-  const handleDetect = useCallback(async () => {
-    if (files.length === 0) return
-    setDetecting(true)
-    setError('')
-    try {
-      const text = await files[0].text()
-      const results = await detectScheme(text, (msg) => setProgress(msg))
-      if (results.length > 0) {
-        const top = results[0].scheme
-        if (schemes.includes(top)) {
-          setSelectedScheme(top)
-        } else {
-          setError(`Detected scheme "${top}" is not available in the current database.`)
-        }
-      } else {
-        setError('Could not detect scheme — no matches found.')
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
-    } finally {
-      setDetecting(false)
-      setProgress('')
-    }
-  }, [files, schemes])
-
-  const handleRun = useCallback(async () => {
-    if (files.length === 0 || !selectedScheme) return
-
+  const runWithScheme = useCallback(async (uploadedFiles: File[], scheme: string) => {
     setRunning(true)
     setError('')
     setResults([])
@@ -88,21 +64,17 @@ function AnalysisPage() {
     setProgressPct(0)
 
     try {
-      const data = await loadSchemeData(selectedScheme)
+      const data = await loadSchemeData(scheme)
       setSchemeData(data)
       setLoci(data.scheme.loci)
 
       setProgress('Parsing FASTA files...')
-      const parsedFiles = await Promise.all(files.map(parseFastaFile))
+      const parsedFiles = await Promise.all(uploadedFiles.map(parseFastaFile))
 
-      const mlstResults = await runMLST(
-        parsedFiles,
-        data,
-        (msg, pct) => {
-          setProgress(msg)
-          setProgressPct(pct)
-        },
-      )
+      const mlstResults = await runMLST(parsedFiles, data, (msg, pct) => {
+        setProgress(msg)
+        setProgressPct(pct)
+      })
 
       setResults(mlstResults)
       setProgress('')
@@ -111,7 +83,66 @@ function AnalysisPage() {
     } finally {
       setRunning(false)
     }
-  }, [files, selectedScheme])
+  }, [])
+
+  const handleFilesChange = useCallback(async (newFiles: File[]) => {
+    setFiles(newFiles)
+    if (newFiles.length === 0) return
+
+    // Reset results and tree
+    setResults([])
+    setNewick('')
+    setAlignment('')
+    setTreeError('')
+    setLogLines([])
+    setError('')
+    setDetectedScheme('')
+
+    const override = manualSchemeRef.current
+    if (override) {
+      // User pre-selected a scheme — use it directly
+      await runWithScheme(newFiles, override)
+      return
+    }
+
+    // Auto-detect scheme then run
+    setRunning(true)
+    setProgress('Detecting scheme...')
+    setProgressPct(0)
+
+    try {
+      const text = await newFiles[0].text()
+      const detected = await detectScheme(text, (msg) => setProgress(msg))
+
+      if (detected.length === 0) {
+        setError('Could not detect MLST scheme — no matches found. Select a scheme manually and click Run.')
+        setRunning(false)
+        return
+      }
+
+      // Use top hit if it's in our scheme list (schemes may not be loaded yet — wait briefly)
+      const topScheme = detected[0].scheme
+      setDetectedScheme(topScheme)
+      setSelectedScheme(topScheme)
+      setRunning(false)
+
+      // Now run MLST with detected scheme
+      await runWithScheme(newFiles, topScheme)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+      setRunning(false)
+    }
+  }, [runWithScheme])
+
+  const handleSchemeChange = useCallback((scheme: string) => {
+    setSelectedScheme(scheme)
+    manualSchemeRef.current = scheme
+  }, [])
+
+  const handleRun = useCallback(async () => {
+    if (files.length === 0 || !selectedScheme) return
+    await runWithScheme(files, selectedScheme)
+  }, [files, selectedScheme, runWithScheme])
 
   const handleBuildTree = useCallback(async () => {
     if (!schemeData || results.length < 2) return
@@ -144,40 +175,34 @@ function AnalysisPage() {
     }
   }, [results, schemeData])
 
-  const canRun = files.length > 0 && selectedScheme !== '' && !running
+  const showRunButton = files.length > 0 && selectedScheme !== '' && !running
 
   return (
     <>
       <div className="controls">
         <FileUpload
           files={files}
-          onFilesChange={setFiles}
+          onFilesChange={handleFilesChange}
           disabled={running}
         />
-        <div className="scheme-row">
+        <div className="scheme-section">
           <SchemeSelector
             schemes={schemes}
             selected={selectedScheme}
-            onSelect={setSelectedScheme}
-            disabled={running || detecting}
+            onSelect={handleSchemeChange}
+            disabled={running}
             loading={schemesLoading}
+            label={detectedScheme ? `Scheme (auto-detected: ${detectedScheme}):` : 'Scheme (optional override):'}
           />
-          <button
-            className="detect-button"
-            onClick={handleDetect}
-            disabled={files.length === 0 || running || detecting}
-            title="Auto-detect scheme from uploaded files"
-          >
-            {detecting ? 'Detecting...' : 'Auto-detect'}
-          </button>
+          {showRunButton && (
+            <button
+              className="run-button"
+              onClick={handleRun}
+            >
+              Run MLST
+            </button>
+          )}
         </div>
-        <button
-          className="run-button"
-          onClick={handleRun}
-          disabled={!canRun}
-        >
-          {running ? 'Running...' : 'Run MLST'}
-        </button>
       </div>
 
       {running && (

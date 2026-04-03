@@ -4,6 +4,7 @@ interface SchemeSelectorProps {
   onSelect: (scheme: string) => void
   disabled: boolean
   loading: boolean
+  label?: string
 }
 
 export function SchemeSelector({
@@ -12,10 +13,11 @@ export function SchemeSelector({
   onSelect,
   disabled,
   loading,
+  label = 'MLST Scheme:',
 }: SchemeSelectorProps) {
   return (
     <div className="scheme-selector">
-      <label htmlFor="scheme-select">MLST Scheme:</label>
+      <label htmlFor="scheme-select">{label}</label>
       <select
         id="scheme-select"
         value={selected}
