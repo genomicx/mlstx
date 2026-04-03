@@ -98,21 +98,25 @@ export function About() {
       <section>
         <h2>Citation</h2>
         <p>
-          MLSTX uses the same allele databases and output conventions as{' '}
-          <a href="https://github.com/tseemann/mlst" target="_blank" rel="noopener noreferrer">
-            tseemann/mlst
-          </a>{' '}
-          and extends it with browser-based phylogenetics, batch processing, and assembly QC.
-          If you use MLSTX in your research, please cite:
+          MLSTX incorporates scheme data from PubMLST. The following citation is required
+          in any publication that uses MLSTX:
         </p>
-        <blockquote style={{ borderLeft: '4px solid var(--gx-accent)', paddingLeft: '1rem', color: 'var(--gx-text-muted)', fontStyle: 'italic', margin: '0.75rem 0' }}>
-          Seemann T. mlst. GitHub. https://github.com/tseemann/mlst
+        <blockquote className="citation-block">
+          This publication made use of the PubMLST website (
+          <a href="https://pubmlst.org/" target="_blank" rel="noopener noreferrer">https://pubmlst.org/</a>
+          ) developed by Keith Jolley (
+          <a href="https://doi.org/10.12688/wellcomeopenres.14826.1" target="_blank" rel="noopener noreferrer">
+            Wellcome Open Res. 2018 Sep 24;3:124
+          </a>
+          ) and sited at the University of Oxford. The development of that website was funded by the Wellcome Trust.
         </blockquote>
-        <p>
-          Scheme data sourced from{' '}
-          <a href="https://pubmlst.org" target="_blank" rel="noopener noreferrer">PubMLST</a>{' '}
-          via the tseemann/mlst database.
-        </p>
+        <p>Please also cite this software as:</p>
+        <blockquote className="citation-block">
+          Alikhan N-F. MLSTX. GitHub.{' '}
+          <a href="https://github.com/genomicx/mlstx" target="_blank" rel="noopener noreferrer">
+            https://github.com/genomicx/mlstx
+          </a>
+        </blockquote>
       </section>
 
       <section>
