@@ -8,7 +8,7 @@ export default defineConfig({
   },
   reporter: 'list',
   use: {
-    baseURL: 'http://localhost:4173',
+    baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
   },
   projects: [
@@ -18,8 +18,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build && npm run preview',
-    url: 'http://localhost:4173',
+    command: 'npm run dev',
+    url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
   },
