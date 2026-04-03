@@ -33,7 +33,7 @@
     "check": "vitest run && eslint . && npm run build"
   },
   "dependencies": {
-    "@genomicx/ui": "^0.6.0",
+    "@genomicx/ui": "^0.7.0",
     "@tailwindcss/vite": "^4.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
