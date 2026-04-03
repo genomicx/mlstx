@@ -156,6 +156,41 @@
   box-shadow: 0 0 0 3px var(--gx-accent-dim);
 }
 
+/* ── Scheme row ──────────────────────────────── */
+.scheme-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.scheme-row > *:first-child {
+  flex: 1;
+}
+
+.detect-button {
+  padding: 0.6rem 1rem;
+  background: var(--gx-bg-elevated);
+  color: var(--gx-accent);
+  border: 1px solid var(--gx-accent);
+  border-radius: var(--gx-radius);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.detect-button:hover:not(:disabled) {
+  background: var(--gx-accent);
+  color: var(--gx-text-inverted);
+}
+
+.detect-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* ── Buttons ─────────────────────────────────── */
 .run-button {
   width: 100%;

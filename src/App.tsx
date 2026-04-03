@@ -9,6 +9,7 @@ import { fetchSchemeList, loadSchemeData } from './mlst/loadScheme'
 import { parseFastaFile } from './mlst/parseFasta'
 import { runMLST } from './mlst/align'
 import { buildTree } from './mlst/buildTree'
+import { detectScheme } from './mlst/autoDetect'
 import type { MLSTResult, SchemeData } from './mlst/types'
 import { APP_VERSION } from './lib/version'
 import './App.css'
@@ -25,6 +26,7 @@ function AnalysisPage() {
   const [loci, setLoci] = useState<string[]>([])
   const [schemeData, setSchemeData] = useState<SchemeData | null>(null)
   const [error, setError] = useState('')
+  const [detecting, setDetecting] = useState(false)
 
   // Tree state
   const [newick, setNewick] = useState('')
@@ -46,6 +48,31 @@ function AnalysisPage() {
         setSchemesLoading(false)
       })
   }, [])
+
+  const handleDetect = useCallback(async () => {
+    if (files.length === 0) return
+    setDetecting(true)
+    setError('')
+    try {
+      const text = await files[0].text()
+      const results = await detectScheme(text, (msg) => setProgress(msg))
+      if (results.length > 0) {
+        const top = results[0].scheme
+        if (schemes.includes(top)) {
+          setSelectedScheme(top)
+        } else {
+          setError(`Detected scheme "${top}" is not available in the current database.`)
+        }
+      } else {
+        setError('Could not detect scheme — no matches found.')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setDetecting(false)
+      setProgress('')
+    }
+  }, [files, schemes])
 
   const handleRun = useCallback(async () => {
     if (files.length === 0 || !selectedScheme) return
@@ -127,13 +154,23 @@ function AnalysisPage() {
           onFilesChange={setFiles}
           disabled={running}
         />
-        <SchemeSelector
-          schemes={schemes}
-          selected={selectedScheme}
-          onSelect={setSelectedScheme}
-          disabled={running}
-          loading={schemesLoading}
-        />
+        <div className="scheme-row">
+          <SchemeSelector
+            schemes={schemes}
+            selected={selectedScheme}
+            onSelect={setSelectedScheme}
+            disabled={running || detecting}
+            loading={schemesLoading}
+          />
+          <button
+            className="detect-button"
+            onClick={handleDetect}
+            disabled={files.length === 0 || running || detecting}
+            title="Auto-detect scheme from uploaded files"
+          >
+            {detecting ? 'Detecting...' : 'Auto-detect'}
+          </button>
+        </div>
         <button
           className="run-button"
           onClick={handleRun}
