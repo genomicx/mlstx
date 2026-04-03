@@ -274,6 +274,7 @@ function App() {
         appName="MLSTX"
         appSubtitle="Browser-based MLST Typing"
         version={APP_VERSION}
+        githubUrl="https://github.com/genomicx/mlstx"
         icon={
           <svg className="gx-nav-logo-icon" viewBox="0 0 24 24" fill="none" stroke="var(--gx-accent)" strokeWidth="2">
             {/* Grid/table icon representing allele profiles */}
