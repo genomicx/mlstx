@@ -25,7 +25,7 @@ export function SchemeSelector({
         disabled={disabled || loading}
       >
         <option value="">
-          {loading ? 'Loading schemes...' : 'Select a scheme'}
+          {loading ? 'Loading schemes...' : 'Auto-detect (per file)'}
         </option>
         {schemes.map((s) => (
           <option key={s} value={s}>

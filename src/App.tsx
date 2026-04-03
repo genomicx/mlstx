@@ -258,13 +258,18 @@ function AnalysisPage() {
 
   const handleSchemeChange = useCallback((scheme: string) => {
     setSelectedScheme(scheme)
+    // Empty string = "Auto-detect" — clear the manual override
     manualSchemeRef.current = scheme
   }, [])
 
   const handleRun = useCallback(async () => {
-    if (files.length === 0 || !selectedScheme) return
-    await runWithScheme(files, selectedScheme)
-  }, [files, selectedScheme, runWithScheme])
+    if (files.length === 0) return
+    if (selectedScheme) {
+      await runWithScheme(files, selectedScheme)
+    } else {
+      await runPerFile(files)
+    }
+  }, [files, selectedScheme, runWithScheme, runPerFile])
 
   const handleClearResults = useCallback(() => {
     setResults([])
@@ -323,7 +328,7 @@ function AnalysisPage() {
     }
   }, [results, schemeData])
 
-  const showRunButton = files.length > 0 && selectedScheme !== '' && !running && !treeBuilding
+  const showRunButton = files.length > 0 && !running && !treeBuilding
 
   return (
     <>
@@ -341,7 +346,7 @@ function AnalysisPage() {
             onSelect={handleSchemeChange}
             disabled={running}
             loading={schemesLoading}
-            label={detectedScheme ? `Scheme (auto-detected: ${detectedScheme}):` : 'Scheme (optional override):'}
+            label={detectedScheme ? `Scheme (last detected: ${detectedScheme}):` : 'Scheme:'}
           />
           {showRunButton && (
             <button

@@ -40,7 +40,7 @@ describe('SchemeSelector', () => {
         loading={false}
       />,
     )
-    expect(screen.getByText('Select a scheme')).toBeInTheDocument()
+    expect(screen.getByText('Auto-detect (per file)')).toBeInTheDocument()
   })
 
   it('calls onSelect when value changes', () => {
