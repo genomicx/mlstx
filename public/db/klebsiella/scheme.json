@@ -1,0 +1,12 @@
+{
+  "name": "klebsiella",
+  "loci": [
+    "gapA",
+    "infB",
+    "mdh",
+    "pgi",
+    "phoE",
+    "rpoB",
+    "tonB"
+  ]
+}

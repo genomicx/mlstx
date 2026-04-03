@@ -1,0 +1,14 @@
+{
+  "name": "brucella",
+  "loci": [
+    "aroA",
+    "cobQ",
+    "dnaK",
+    "gap",
+    "glk",
+    "gyrB",
+    "int_hyp",
+    "omp25",
+    "trpE"
+  ]
+}

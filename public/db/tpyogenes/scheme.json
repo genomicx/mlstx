@@ -1,0 +1,12 @@
+{
+  "name": "tpyogenes",
+  "loci": [
+    "adk",
+    "gyrB",
+    "leuA",
+    "metG",
+    "recA",
+    "tpi",
+    "tuf"
+  ]
+}

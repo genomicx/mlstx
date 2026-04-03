@@ -1,0 +1,12 @@
+{
+  "name": "bcc",
+  "loci": [
+    "atpD",
+    "gltB",
+    "gyrB",
+    "lepA",
+    "phaC",
+    "recA",
+    "trpB"
+  ]
+}

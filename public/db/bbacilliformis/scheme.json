@@ -1,0 +1,12 @@
+{
+  "name": "bbacilliformis",
+  "loci": [
+    "bvrR",
+    "flaA",
+    "ftsZ",
+    "groEL",
+    "ribC",
+    "rnpB",
+    "rpoB"
+  ]
+}

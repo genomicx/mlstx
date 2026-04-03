@@ -1,0 +1,11 @@
+{
+  "name": "aeromonas",
+  "loci": [
+    "gltA",
+    "groL",
+    "gyrB",
+    "metG",
+    "ppsA",
+    "recA"
+  ]
+}

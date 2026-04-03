@@ -1,0 +1,9 @@
+{
+  "name": "ureaplasma",
+  "loci": [
+    "ftsH",
+    "rpL22",
+    "thrS",
+    "valS"
+  ]
+}

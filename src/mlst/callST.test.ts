@@ -24,44 +24,44 @@ describe('callST', () => {
     expect(result.alleles).toEqual({ aroC: '1', dnaN: '1', hemD: '1' })
   })
 
-  it('returns incomplete when any locus is no_hit', () => {
+  it('returns - when any locus has no hit', () => {
     const loci = [
       makeLocus('aroC', '1'),
-      makeLocus('dnaN', 'no_hit'),
+      makeLocus('dnaN', '-'),
       makeLocus('hemD', '1'),
     ]
     const result = callST('test.fasta', 'salmonella', loci, profiles)
-    expect(result.st).toBe('incomplete')
+    expect(result.st).toBe('-')
   })
 
-  it('returns novel when any locus is novel', () => {
+  it('returns ~ when any locus is novel (~N)', () => {
     const loci = [
       makeLocus('aroC', '1'),
-      makeLocus('dnaN', 'novel'),
+      makeLocus('dnaN', '~3'),
       makeLocus('hemD', '1'),
     ]
     const result = callST('test.fasta', 'salmonella', loci, profiles)
-    expect(result.st).toBe('novel')
+    expect(result.st).toBe('~')
   })
 
-  it('returns novel when all exact but no matching profile', () => {
+  it('returns ~ when all exact but no matching profile', () => {
     const loci = [
       makeLocus('aroC', '99'),
       makeLocus('dnaN', '99'),
       makeLocus('hemD', '99'),
     ]
     const result = callST('test.fasta', 'salmonella', loci, profiles)
-    expect(result.st).toBe('novel')
+    expect(result.st).toBe('~')
   })
 
-  it('prioritizes no_hit over novel', () => {
+  it('prioritises - over ~ when both present', () => {
     const loci = [
-      makeLocus('aroC', 'novel'),
-      makeLocus('dnaN', 'no_hit'),
+      makeLocus('aroC', '~1'),
+      makeLocus('dnaN', '-'),
       makeLocus('hemD', '1'),
     ]
     const result = callST('test.fasta', 'salmonella', loci, profiles)
-    expect(result.st).toBe('incomplete')
+    expect(result.st).toBe('-')
   })
 
   it('includes filename and scheme in result', () => {

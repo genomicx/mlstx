@@ -1,0 +1,12 @@
+{
+  "name": "bordetella_3",
+  "loci": [
+    "adk",
+    "fumC",
+    "glyA",
+    "icd",
+    "pepA",
+    "pgm",
+    "tyrB"
+  ]
+}

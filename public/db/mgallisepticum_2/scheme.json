@@ -1,0 +1,11 @@
+{
+  "name": "mgallisepticum_2",
+  "loci": [
+    "atpG2",
+    "dnaA",
+    "fusA",
+    "rpoB",
+    "ruvB",
+    "uvrA"
+  ]
+}

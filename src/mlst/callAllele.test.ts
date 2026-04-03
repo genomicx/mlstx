@@ -18,9 +18,9 @@ function makeHit(overrides: Partial<AlignmentHit> = {}): AlignmentHit {
 }
 
 describe('callAllele', () => {
-  it('returns no_hit when no hits provided', () => {
+  it('returns - when no hits provided', () => {
     const result = callAllele('aroC', [], {})
-    expect(result.allele).toBe('no_hit')
+    expect(result.allele).toBe('-')
     expect(result.identity).toBe(0)
     expect(result.coverage).toBe(0)
     expect(result.bestHit).toBeNull()
@@ -34,23 +34,23 @@ describe('callAllele', () => {
     expect(result.coverage).toBe(1.0)
   })
 
-  it('returns novel for high identity but not exact', () => {
+  it('returns ~N for high identity but not exact (novel allele)', () => {
     const hit = makeHit({ targetName: 'aroC_1', identity: 99, alignmentLength: 501 })
     const result = callAllele('aroC', [hit], { aroC_1: 501 })
-    expect(result.allele).toBe('novel')
+    expect(result.allele).toBe('~1')
     expect(result.identity).toBe(0.99)
   })
 
-  it('returns no_hit for identity below 95% (tseemann --minid 95)', () => {
+  it('returns - for identity below 95% (tseemann --minid 95)', () => {
     const hit = makeHit({ targetName: 'aroC_1', identity: 94, alignmentLength: 501 })
     const result = callAllele('aroC', [hit], { aroC_1: 501 })
-    expect(result.allele).toBe('no_hit')
+    expect(result.allele).toBe('-')
   })
 
-  it('returns no_hit for coverage below 10% (tseemann --mincov 10)', () => {
+  it('returns - for coverage below 10% (tseemann --mincov 10)', () => {
     const hit = makeHit({ targetName: 'aroC_1', identity: 100, alignmentLength: 40 })
     const result = callAllele('aroC', [hit], { aroC_1: 501 })
-    expect(result.allele).toBe('no_hit')
+    expect(result.allele).toBe('-')
   })
 
   it('selects best hit by highest identity', () => {

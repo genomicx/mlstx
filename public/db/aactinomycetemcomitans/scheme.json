@@ -1,0 +1,12 @@
+{
+  "name": "aactinomycetemcomitans",
+  "loci": [
+    "adk",
+    "atpG",
+    "frdB",
+    "mdh",
+    "pgi",
+    "recA",
+    "zwf"
+  ]
+}

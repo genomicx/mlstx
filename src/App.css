@@ -385,4 +385,101 @@
   background: #ffffff; /* phylocanvas.gl renders on white — force regardless of theme */
 }
 
+/* ── FileUpload file list scrollbar ────────────── */
+/* Override @genomicx/ui 120px cap — allow more files before scrolling */
+.controls .gx-file-upload .gx-file-list {
+  max-height: 220px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gx-border) transparent;
+}
+
+/* ── QC Section ──────────────────────────────── */
+.qc-section {
+  background: var(--gx-bg-alt);
+  border: 1px solid var(--gx-border);
+  border-radius: var(--gx-radius-lg);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: var(--gx-shadow);
+}
+
+.qc-section h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gx-text);
+}
+
+.qc-source {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  color: var(--gx-text-muted);
+}
+
+.qc-source a {
+  color: var(--gx-accent);
+  text-decoration: none;
+}
+
+.qc-table-container {
+  overflow-x: auto;
+  border-radius: var(--gx-radius);
+  border: 1px solid var(--gx-border);
+}
+
+.qc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.qc-table th,
+.qc-table td {
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.qc-table th {
+  background: var(--gx-bg-elevated);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gx-text-muted);
+  border-bottom: 2px solid var(--gx-border);
+}
+
+.qc-table tbody tr {
+  border-bottom: 1px solid var(--gx-border);
+}
+
+.qc-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.qc-table tbody tr:hover {
+  background: var(--gx-bg-elevated);
+}
+
+.species-cell {
+  font-style: italic;
+  color: var(--gx-text-muted);
+  font-size: 0.82rem;
+}
+
+.stat-pass {
+  color: var(--gx-text);
+}
+
+.stat-fail {
+  color: var(--gx-error, #ef4444);
+  font-weight: 600;
+}
+
+.no-data {
+  color: var(--gx-text-muted);
+  opacity: 0.5;
+}
+
 

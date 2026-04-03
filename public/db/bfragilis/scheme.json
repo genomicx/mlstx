@@ -1,0 +1,12 @@
+{
+  "name": "bfragilis",
+  "loci": [
+    "dnaJ",
+    "fusA",
+    "groL",
+    "prfA",
+    "recA",
+    "rpoB",
+    "rprX"
+  ]
+}

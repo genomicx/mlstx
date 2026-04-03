@@ -1,0 +1,12 @@
+{
+  "name": "rhodococcus",
+  "loci": [
+    "adk",
+    "gapdh",
+    "icl",
+    "mdh",
+    "recA",
+    "rpoB",
+    "tpi"
+  ]
+}

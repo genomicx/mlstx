@@ -1,0 +1,12 @@
+{
+  "name": "yersinia",
+  "loci": [
+    "aarF",
+    "dfp",
+    "galR",
+    "glnS",
+    "hemA",
+    "rfaE",
+    "speA"
+  ]
+}

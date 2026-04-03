@@ -1,0 +1,11 @@
+{
+  "name": "proteus",
+  "loci": [
+    "atpD",
+    "dnaJ",
+    "mdh",
+    "pyrC",
+    "recA",
+    "rpoD"
+  ]
+}

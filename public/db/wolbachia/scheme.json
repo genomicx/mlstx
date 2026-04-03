@@ -1,0 +1,10 @@
+{
+  "name": "wolbachia",
+  "loci": [
+    "coxA",
+    "fbpA",
+    "ftsZ",
+    "gatB",
+    "hcpA"
+  ]
+}

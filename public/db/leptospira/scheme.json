@@ -1,0 +1,12 @@
+{
+  "name": "leptospira",
+  "loci": [
+    "caiB_1",
+    "glmU_1",
+    "mreA_1",
+    "pfkB_1",
+    "pntA_1",
+    "sucA_1",
+    "tpiA_1"
+  ]
+}

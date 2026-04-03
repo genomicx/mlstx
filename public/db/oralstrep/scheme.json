@@ -1,0 +1,12 @@
+{
+  "name": "oralstrep",
+  "loci": [
+    "aroE",
+    "ddl",
+    "gdh",
+    "gki",
+    "hexB",
+    "recP",
+    "xpt"
+  ]
+}

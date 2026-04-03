@@ -1,0 +1,12 @@
+{
+  "name": "campylobacter_nonjejuni_6",
+  "loci": [
+    "Chy_aspA",
+    "Chy_atpA",
+    "Chy_glnA",
+    "Chy_gltA",
+    "Chy_glyA",
+    "Chy_pgm",
+    "Chy_tkt"
+  ]
+}

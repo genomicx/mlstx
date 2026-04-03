@@ -1,0 +1,13 @@
+{
+  "name": "mpneumoniae",
+  "loci": [
+    "adk",
+    "arcC",
+    "atpA",
+    "glyA",
+    "gmk",
+    "gyrB",
+    "pgm",
+    "ppa"
+  ]
+}

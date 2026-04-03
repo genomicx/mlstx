@@ -1,0 +1,11 @@
+{
+  "name": "streptothermophilus",
+  "loci": [
+    "ddlA",
+    "glcK",
+    "proA",
+    "ptsI",
+    "serB",
+    "tkt"
+  ]
+}

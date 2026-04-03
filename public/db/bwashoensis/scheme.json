@@ -1,0 +1,11 @@
+{
+  "name": "bwashoensis",
+  "loci": [
+    "16S",
+    "ftsZ",
+    "gltA",
+    "groEL",
+    "ribC",
+    "rpoB"
+  ]
+}

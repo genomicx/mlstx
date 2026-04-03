@@ -1,0 +1,13 @@
+{
+  "name": "shewanella",
+  "loci": [
+    "16S_rRNA",
+    "adk",
+    "atpB",
+    "guaA",
+    "gyrB",
+    "mdh",
+    "recA",
+    "rpoS"
+  ]
+}

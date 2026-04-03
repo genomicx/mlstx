@@ -1,0 +1,12 @@
+{
+  "name": "ecloacae",
+  "loci": [
+    "dnaA",
+    "fusA",
+    "gyrB",
+    "leuS",
+    "pyrG",
+    "rplB",
+    "rpoB"
+  ]
+}

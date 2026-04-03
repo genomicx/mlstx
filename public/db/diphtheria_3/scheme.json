@@ -1,0 +1,12 @@
+{
+  "name": "diphtheria_3",
+  "loci": [
+    "atpA",
+    "dnaE",
+    "dnaK",
+    "fusA",
+    "leuA",
+    "odhA",
+    "rpoB"
+  ]
+}

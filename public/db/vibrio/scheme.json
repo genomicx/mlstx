@@ -1,0 +1,9 @@
+{
+  "name": "vibrio",
+  "loci": [
+    "atpA",
+    "gyrB",
+    "pyrH",
+    "recA"
+  ]
+}

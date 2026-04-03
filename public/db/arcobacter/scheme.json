@@ -1,0 +1,12 @@
+{
+  "name": "arcobacter",
+  "loci": [
+    "aspA",
+    "atpA",
+    "glnA",
+    "gltA",
+    "glyA",
+    "pgm",
+    "tkt"
+  ]
+}

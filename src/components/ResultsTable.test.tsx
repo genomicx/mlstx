@@ -15,14 +15,14 @@ const results: MLSTResult[] = [
   {
     filename: 'genome2.fasta',
     scheme: 'salmonella',
-    st: 'novel',
-    alleles: { aroC: '1', dnaN: 'novel', hemD: '3' },
+    st: '~',
+    alleles: { aroC: '1', dnaN: '~3', hemD: '3' },
   },
   {
     filename: 'genome3.fasta',
     scheme: 'salmonella',
-    st: 'incomplete',
-    alleles: { aroC: '1', dnaN: 'no_hit', hemD: '3' },
+    st: '-',
+    alleles: { aroC: '1', dnaN: '-', hemD: '3' },
   },
 ]
 
@@ -45,8 +45,8 @@ describe('ResultsTable', () => {
     render(<ResultsTable results={results} loci={loci} />)
     expect(screen.getByText('genome1.fasta')).toBeInTheDocument()
     expect(screen.getByText('152')).toBeInTheDocument()
-    expect(screen.getAllByText('novel').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText('incomplete')).toBeInTheDocument()
+    expect(screen.getAllByText('~').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('-').length).toBeGreaterThanOrEqual(1)
   })
 
   it('uses success variant for exact match', () => {
@@ -55,16 +55,16 @@ describe('ResultsTable', () => {
     expect(badge.className).toContain('gx-badge--success')
   })
 
-  it('uses warning variant for novel', () => {
+  it('uses warning variant for novel (~)', () => {
     render(<ResultsTable results={[results[1]]} loci={loci} />)
-    const novelCells = screen.getAllByText('novel')
-    expect(novelCells[0].className).toContain('gx-badge--warning')
+    const stBadge = screen.getAllByText('~')[0]
+    expect(stBadge.className).toContain('gx-badge--warning')
   })
 
-  it('uses muted variant for incomplete/no_hit', () => {
+  it('uses muted variant for no hit (-)', () => {
     render(<ResultsTable results={[results[2]]} loci={loci} />)
-    const badge = screen.getByText('incomplete')
-    expect(badge.className).toContain('gx-badge--muted')
+    const badges = screen.getAllByText('-')
+    expect(badges[0].className).toContain('gx-badge--muted')
   })
 
   it('adds title attributes for accessibility', () => {

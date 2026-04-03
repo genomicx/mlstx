@@ -4,13 +4,18 @@ import { NavBar, AppFooter, LogConsole, FileUpload, ProgressBar } from '@genomic
 import { SchemeSelector } from './components/SchemeSelector'
 import { ResultsTable, exportCSV, exportJSON } from './components/ResultsTable'
 import { PhyloTree } from './components/PhyloTree'
+import { QCPanel } from './components/QCPanel'
 import { About } from './pages/About'
 import { fetchSchemeList, loadSchemeData } from './mlst/loadScheme'
 import { parseFastaFile } from './mlst/parseFasta'
 import { runMLST } from './mlst/align'
 import { buildTree } from './mlst/buildTree'
 import { detectScheme } from './mlst/autoDetect'
+import { computeStats } from './mlst/assemblyStats'
+import { runQC } from './mlst/qualibact'
 import type { MLSTResult, SchemeData } from './mlst/types'
+import type { AssemblyStats } from './mlst/assemblyStats'
+import type { QCResult } from './mlst/qualibact'
 import { APP_VERSION } from './lib/version'
 import './App.css'
 
@@ -27,6 +32,8 @@ function AnalysisPage() {
   const [schemeData, setSchemeData] = useState<SchemeData | null>(null)
   const [error, setError] = useState('')
   const [detectedScheme, setDetectedScheme] = useState('')
+  const [qcResults, setQcResults] = useState<QCResult[]>([])
+  const [statsMap, setStatsMap] = useState<Record<string, AssemblyStats>>({})
 
   // Tree state
   const [newick, setNewick] = useState('')
@@ -60,6 +67,8 @@ function AnalysisPage() {
     setAlignment('')
     setTreeError('')
     setLogLines([])
+    setQcResults([])
+    setStatsMap({})
     setProgress('Loading scheme data...')
     setProgressPct(0)
 
@@ -77,6 +86,18 @@ function AnalysisPage() {
       })
 
       setResults(mlstResults)
+
+      // Compute assembly stats + QC in background
+      const newStatsMap: Record<string, AssemblyStats> = {}
+      for (const pf of parsedFiles) {
+        newStatsMap[pf.filename] = computeStats(pf)
+      }
+      setStatsMap(newStatsMap)
+
+      const qcs = await Promise.all(
+        mlstResults.map((r) => runQC(newStatsMap[r.filename], r.scheme)),
+      )
+      setQcResults(qcs)
       setProgress('')
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
@@ -96,9 +117,13 @@ function AnalysisPage() {
     setLogLines([])
     setSchemeData(null)
     setLoci([])
+    setQcResults([])
+    setStatsMap({})
 
     const allResults: MLSTResult[] = []
     let combinedLoci: string[] = []
+    const newStatsMap: Record<string, AssemblyStats> = {}
+    const allQc: QCResult[] = []
 
     try {
       for (let i = 0; i < uploadedFiles.length; i++) {
@@ -143,6 +168,15 @@ function AnalysisPage() {
         allResults.push(...fileResults)
         setResults([...allResults])
 
+        // Compute assembly stats + QC for this file
+        const stats = computeStats(parsed)
+        newStatsMap[parsed.filename] = stats
+        setStatsMap({ ...newStatsMap })
+
+        const qc = await runQC(stats, scheme)
+        allQc.push(qc)
+        setQcResults([...allQc])
+
         // Keep the last scheme's data for tree building
         setSchemeData(data)
         setLoci(combinedLoci)
@@ -169,6 +203,8 @@ function AnalysisPage() {
     setLogLines([])
     setError('')
     setDetectedScheme('')
+    setQcResults([])
+    setStatsMap({})
 
     const override = manualSchemeRef.current
     if (override) {
@@ -296,6 +332,10 @@ function AnalysisPage() {
         </section>
       )}
 
+      {qcResults.length > 0 && (
+        <QCPanel qcResults={qcResults} statsMap={statsMap} />
+      )}
+
       {treeBuilding && (
         <section className="progress" aria-live="polite">
           <ProgressBar value={treeProgressPct} label={treeProgress} />
@@ -325,7 +365,7 @@ function App() {
     <div className="app">
       <NavBar
         appName="MLSTX"
-        appSubtitle="Browser-based MLST Typing"
+        appSubtitle="MLST Typing & Phylogenetics"
         version={APP_VERSION}
         githubUrl="https://github.com/genomicx/mlstx"
         icon={

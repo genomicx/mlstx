@@ -1,0 +1,12 @@
+{
+  "name": "ranatipestifer",
+  "loci": [
+    "dnaB",
+    "gluD",
+    "gpi",
+    "groEL",
+    "gyrA",
+    "mdh",
+    "rpoB"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "campylobacter_nonjejuni_8",
+  "loci": [
+    "Csp_aspA",
+    "Csp_atpA",
+    "Csp_glnA",
+    "Csp_gltA",
+    "Csp_glyA",
+    "Csp_pgm",
+    "Csp_tkt"
+  ]
+}

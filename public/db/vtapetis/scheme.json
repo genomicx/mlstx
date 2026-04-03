@@ -1,0 +1,15 @@
+{
+  "name": "vtapetis",
+  "loci": [
+    "atpA",
+    "fstZ",
+    "gapA",
+    "hsp60",
+    "pyrH",
+    "rctB",
+    "recA",
+    "rpoA",
+    "rpoD",
+    "topA"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "hparasuis",
+  "loci": [
+    "6pgd",
+    "atpD",
+    "frdB",
+    "g3pd",
+    "infB",
+    "mdh",
+    "rpoB"
+  ]
+}

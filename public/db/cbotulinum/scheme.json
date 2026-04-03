@@ -1,0 +1,12 @@
+{
+  "name": "cbotulinum",
+  "loci": [
+    "aceK",
+    "aroE",
+    "hsp",
+    "mdh",
+    "oppB",
+    "recA",
+    "rpoB"
+  ]
+}

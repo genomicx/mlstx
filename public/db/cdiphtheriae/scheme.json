@@ -1,0 +1,12 @@
+{
+  "name": "cdiphtheriae",
+  "loci": [
+    "atpA",
+    "dnaE",
+    "dnaK",
+    "fusA",
+    "leuA",
+    "odhA",
+    "rpoB"
+  ]
+}

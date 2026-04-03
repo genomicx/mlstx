@@ -1,6 +1,1434 @@
-[
-  "ecoli",
-  "ecoli_achtman_4",
-  "salmonella",
-  "saureus"
-]
+{
+  "aactinomycetemcomitans": [
+    "adk",
+    "atpG",
+    "frdB",
+    "mdh",
+    "pgi",
+    "recA",
+    "zwf"
+  ],
+  "abaumannii": [
+    "Oxf_cpn60",
+    "Oxf_gdhB",
+    "Oxf_gltA",
+    "Oxf_gpi",
+    "Oxf_gyrB",
+    "Oxf_recA",
+    "Oxf_rpoD"
+  ],
+  "abaumannii_2": [
+    "Pas_cpn60",
+    "Pas_fusA",
+    "Pas_gltA",
+    "Pas_pyrG",
+    "Pas_recA",
+    "Pas_rplB",
+    "Pas_rpoB"
+  ],
+  "achromobacter": [
+    "eno",
+    "gltB",
+    "lepA",
+    "nrdA",
+    "nuoL",
+    "nusA",
+    "rpoB"
+  ],
+  "aeromonas": [
+    "gltA",
+    "groL",
+    "gyrB",
+    "metG",
+    "ppsA",
+    "recA"
+  ],
+  "aparagallinarum": [
+    "adk",
+    "deoD",
+    "infB",
+    "mdh",
+    "pmi",
+    "recA",
+    "zwf"
+  ],
+  "aphagocytophilum": [
+    "atpA",
+    "dnaN",
+    "fumC",
+    "glyA",
+    "mdh",
+    "pheS",
+    "sucA"
+  ],
+  "arcobacter": [
+    "aspA",
+    "atpA",
+    "glnA",
+    "gltA",
+    "glyA",
+    "pgm",
+    "tkt"
+  ],
+  "bbacilliformis": [
+    "bvrR",
+    "flaA",
+    "ftsZ",
+    "groEL",
+    "ribC",
+    "rnpB",
+    "rpoB"
+  ],
+  "bcc": [
+    "atpD",
+    "gltB",
+    "gyrB",
+    "lepA",
+    "phaC",
+    "recA",
+    "trpB"
+  ],
+  "bcereus": [
+    "glp",
+    "gmk",
+    "ilv",
+    "pta",
+    "pur",
+    "pyc",
+    "tpi"
+  ],
+  "bfragilis": [
+    "dnaJ",
+    "fusA",
+    "groL",
+    "prfA",
+    "recA",
+    "rpoB",
+    "rprX"
+  ],
+  "bhenselae": [
+    "16S",
+    "batR",
+    "ftsZ",
+    "gltA",
+    "groEL",
+    "nlpD",
+    "ribC",
+    "rpoB"
+  ],
+  "blicheniformis_14": [
+    "adk",
+    "ccpA",
+    "recF",
+    "rpoB",
+    "spo0A",
+    "sucC"
+  ],
+  "bordetella_3": [
+    "adk",
+    "fumC",
+    "glyA",
+    "icd",
+    "pepA",
+    "pgm",
+    "tyrB"
+  ],
+  "borrelia": [
+    "clpA",
+    "clpX",
+    "nifS",
+    "pepX",
+    "pyrG",
+    "recG",
+    "rplB",
+    "uvrA"
+  ],
+  "bpseudomallei": [
+    "ace",
+    "gltB",
+    "gmhD",
+    "lepA",
+    "lipA",
+    "narK",
+    "ndh"
+  ],
+  "brachyspira": [
+    "Bra_adh",
+    "Bra_alp",
+    "Bra_est",
+    "Bra_gdh",
+    "Bra_glp",
+    "Bra_pgm",
+    "Bra_thi"
+  ],
+  "brachyspira_2": [
+    "Bhy_adh",
+    "Bhy_alp",
+    "Bhy_est",
+    "Bhy_gdh",
+    "Bhy_glpK",
+    "Bhy_pgm",
+    "Bhy_thi"
+  ],
+  "brachyspira_3": [
+    "Bin_adh",
+    "Bin_alp",
+    "Bin_est",
+    "Bin_gdh",
+    "Bin_glpK",
+    "Bin_pgm",
+    "Bin_thi"
+  ],
+  "brachyspira_4": [
+    "Bpi_adh",
+    "Bpi_alp",
+    "Bpi_est",
+    "Bpi_gdh",
+    "Bpi_glpK",
+    "Bpi_pgm",
+    "Bpi_thi"
+  ],
+  "brachyspira_5": [
+    "Bha_adh",
+    "Bha_est",
+    "Bha_gdh",
+    "Bha_glpK",
+    "Bha_pgm",
+    "Bha_thi"
+  ],
+  "brucella": [
+    "aroA",
+    "cobQ",
+    "dnaK",
+    "gap",
+    "glk",
+    "gyrB",
+    "int_hyp",
+    "omp25",
+    "trpE"
+  ],
+  "bsubtilis": [
+    "glpF",
+    "ilvD",
+    "pta",
+    "purH",
+    "pycA",
+    "rpoD",
+    "tpiA"
+  ],
+  "bwashoensis": [
+    "16S",
+    "ftsZ",
+    "gltA",
+    "groEL",
+    "ribC",
+    "rpoB"
+  ],
+  "campylobacter": [
+    "aspA",
+    "glnA",
+    "gltA",
+    "glyA",
+    "pgm",
+    "tkt",
+    "uncA"
+  ],
+  "campylobacter_nonjejuni": [
+    "Che_aspA",
+    "Che_atpA",
+    "Che_glnA",
+    "Che_gltA",
+    "Che_glyA",
+    "Che_pgm",
+    "Che_tkt"
+  ],
+  "campylobacter_nonjejuni_2": [
+    "Cin_aspA",
+    "Cin_atpA",
+    "Cin_glnA",
+    "Cin_glyA",
+    "Cin_pgi",
+    "Cin_pgm",
+    "Cin_tkt"
+  ],
+  "campylobacter_nonjejuni_3": [
+    "Cla_adk",
+    "Cla_atpA",
+    "Cla_glnA",
+    "Cla_glyA",
+    "Cla_pgi",
+    "Cla_pgm",
+    "Cla_tkt"
+  ],
+  "campylobacter_nonjejuni_4": [
+    "Cup_adk",
+    "Cup_aspA",
+    "Cup_atpA",
+    "Cup_glnA",
+    "Cup_glyA",
+    "Cup_pgi",
+    "Cup_tkt"
+  ],
+  "campylobacter_nonjejuni_5": [
+    "Cco_aspA",
+    "Cco_atpA",
+    "Cco_glnA",
+    "Cco_gltA",
+    "Cco_glyA",
+    "Cco_ilvD",
+    "Cco_pgm"
+  ],
+  "campylobacter_nonjejuni_6": [
+    "Chy_aspA",
+    "Chy_atpA",
+    "Chy_glnA",
+    "Chy_gltA",
+    "Chy_glyA",
+    "Chy_pgm",
+    "Chy_tkt"
+  ],
+  "campylobacter_nonjejuni_7": [
+    "Cln_aspA",
+    "Cln_atpA",
+    "Cln_glnA",
+    "Cln_gltA",
+    "Cln_glyA",
+    "Cln_pgm",
+    "Cln_tkt"
+  ],
+  "campylobacter_nonjejuni_8": [
+    "Csp_aspA",
+    "Csp_atpA",
+    "Csp_glnA",
+    "Csp_gltA",
+    "Csp_glyA",
+    "Csp_pgm",
+    "Csp_tkt"
+  ],
+  "campylobacter_nonjejuni_9": [
+    "Cfe_aspA",
+    "Cfe_glnA",
+    "Cfe_gltA",
+    "Cfe_glyA",
+    "Cfe_pgm",
+    "Cfe_tkt",
+    "Cfe_uncA"
+  ],
+  "cbotulinum": [
+    "aceK",
+    "aroE",
+    "hsp",
+    "mdh",
+    "oppB",
+    "recA",
+    "rpoB"
+  ],
+  "cdifficile": [
+    "adk",
+    "atpA",
+    "dxr",
+    "glyA",
+    "recA",
+    "sodA",
+    "tpi"
+  ],
+  "cdiphtheriae": [
+    "atpA",
+    "dnaE",
+    "dnaK",
+    "fusA",
+    "leuA",
+    "odhA",
+    "rpoB"
+  ],
+  "cfreundii": [
+    "arcA",
+    "aspC",
+    "clpX",
+    "dnaG",
+    "fadD",
+    "lysP",
+    "mdh"
+  ],
+  "chlamydiales": [
+    "enoA",
+    "fumC",
+    "gatA",
+    "gidA",
+    "hemN",
+    "hflX",
+    "oppA"
+  ],
+  "cmaltaromaticum": [
+    "dapE",
+    "ddlA",
+    "glpQ",
+    "ilvE",
+    "leuS",
+    "pyc",
+    "pyrE"
+  ],
+  "cperfringens": [
+    "colA",
+    "groEL",
+    "gyrB",
+    "nadA",
+    "pgk",
+    "plc",
+    "sigK",
+    "sodA"
+  ],
+  "cronobacter": [
+    "atpD",
+    "fusA",
+    "glnS",
+    "gltB",
+    "gyrB",
+    "infB",
+    "pps"
+  ],
+  "csepticum": [
+    "ddl",
+    "dnaK",
+    "glpK",
+    "groEL",
+    "gyrA",
+    "recA",
+    "tpi"
+  ],
+  "diphtheria_3": [
+    "atpA",
+    "dnaE",
+    "dnaK",
+    "fusA",
+    "leuA",
+    "odhA",
+    "rpoB"
+  ],
+  "dnodosus": [
+    "dcd",
+    "dtdA",
+    "folK",
+    "recR",
+    "rlmH",
+    "rplI",
+    "tsaE"
+  ],
+  "ecloacae": [
+    "dnaA",
+    "fusA",
+    "gyrB",
+    "leuS",
+    "pyrG",
+    "rplB",
+    "rpoB"
+  ],
+  "ecoli": [
+    "dinB",
+    "icdA",
+    "pabB",
+    "polB",
+    "putP",
+    "trpA",
+    "trpB",
+    "uidA"
+  ],
+  "ecoli_achtman_4": [
+    "adk",
+    "fumC",
+    "gyrB",
+    "icd",
+    "mdh",
+    "purA",
+    "recA"
+  ],
+  "edwardsiella": [
+    "adk",
+    "atpD",
+    "dnaJ",
+    "gapA",
+    "glnA",
+    "hsp60",
+    "phoR",
+    "pyrG",
+    "rpoA",
+    "tuf"
+  ],
+  "efaecalis": [
+    "aroE",
+    "gdh",
+    "gki",
+    "gyd",
+    "pstS",
+    "xpt",
+    "yqiL"
+  ],
+  "efaecium": [
+    "adk",
+    "atpA",
+    "ddl",
+    "gdh",
+    "gyd",
+    "pstS",
+    "purK"
+  ],
+  "fpsychrophilum": [
+    "atpA",
+    "dnaK",
+    "fumC",
+    "gyrB",
+    "murG",
+    "trpB",
+    "tuf"
+  ],
+  "gallibacterium": [
+    "adk",
+    "atpD",
+    "fumC",
+    "gyrB",
+    "infB",
+    "mdh",
+    "recN",
+    "thdF"
+  ],
+  "geotrichum": [
+    "NUP116",
+    "PLB3",
+    "SAPT4",
+    "URA1",
+    "URA3"
+  ],
+  "halobacteria": [
+    "EF-2",
+    "atpB",
+    "radA",
+    "rpoB'",
+    "secY"
+  ],
+  "hcinaedi": [
+    "23S_rRNA",
+    "aroE",
+    "aspA",
+    "atpA",
+    "cdtB",
+    "ppa",
+    "tkt"
+  ],
+  "helicobacter": [
+    "atpA",
+    "efp",
+    "mutY",
+    "ppa",
+    "trpC",
+    "ureI",
+    "yphC"
+  ],
+  "hinfluenzae": [
+    "adk",
+    "atpG",
+    "frdB",
+    "fucK",
+    "mdh",
+    "pgi",
+    "recA"
+  ],
+  "hparasuis": [
+    "6pgd",
+    "atpD",
+    "frdB",
+    "g3pd",
+    "infB",
+    "mdh",
+    "rpoB"
+  ],
+  "hsuis": [
+    "atpA",
+    "efp",
+    "mutY",
+    "ppa",
+    "trpC",
+    "ureAB",
+    "yphC"
+  ],
+  "kaerogenes": [
+    "dnaA",
+    "fusA",
+    "gyrB",
+    "leuS",
+    "pryG",
+    "rplB",
+    "rpoB"
+  ],
+  "kingella": [
+    "abcZ",
+    "adk",
+    "aroE",
+    "cpn60",
+    "gdh",
+    "recA"
+  ],
+  "klebsiella": [
+    "gapA",
+    "infB",
+    "mdh",
+    "pgi",
+    "phoE",
+    "rpoB",
+    "tonB"
+  ],
+  "koxytoca": [
+    "gapA",
+    "infB",
+    "mdh",
+    "pgi",
+    "phoE",
+    "rpoB",
+    "tonB"
+  ],
+  "leptospira": [
+    "caiB_1",
+    "glmU_1",
+    "mreA_1",
+    "pfkB_1",
+    "pntA_1",
+    "sucA_1",
+    "tpiA_1"
+  ],
+  "leptospira_2": [
+    "adk_2",
+    "glmU_2",
+    "icdA_2",
+    "lipL32_2",
+    "lipL41_2",
+    "mreA_2",
+    "pntA_2"
+  ],
+  "leptospira_3": [
+    "adk_3",
+    "icdA_3",
+    "lipL32_3",
+    "lipL41_3",
+    "rrs2_3",
+    "secY_3"
+  ],
+  "lgarvieae": [
+    "als",
+    "atpA",
+    "galP",
+    "gapC",
+    "gyrB",
+    "rpoC",
+    "tuf"
+  ],
+  "liberibacter": [
+    "adk",
+    "atpA",
+    "fbpA",
+    "ftsZ",
+    "glyA",
+    "groEL",
+    "gyrB"
+  ],
+  "listeria_2": [
+    "abcZ",
+    "bglA",
+    "cat",
+    "dapE",
+    "dat",
+    "ldh",
+    "lhkA"
+  ],
+  "llactis_phage": [
+    "lys",
+    "mcp",
+    "mtp",
+    "terL",
+    "tmp"
+  ],
+  "lsalivarius": [
+    "nrdB",
+    "parB",
+    "pstB",
+    "rpoA",
+    "rpsB"
+  ],
+  "mabscessus": [
+    "argH",
+    "cya",
+    "gnd",
+    "murC",
+    "pta",
+    "purH",
+    "rpoB"
+  ],
+  "magalactiae": [
+    "dnaA",
+    "gltX",
+    "gyrB",
+    "metS",
+    "tufA"
+  ],
+  "mamphoriforme": [
+    "atpG",
+    "gyrB",
+    "rpoB",
+    "uvrA"
+  ],
+  "manserisalpingitidis": [
+    "atpG",
+    "fusA",
+    "pgiB",
+    "plsY",
+    "uvrA"
+  ],
+  "mbovis": [
+    "adh1",
+    "gltX",
+    "gpsA",
+    "gyrB",
+    "pta2",
+    "tdk",
+    "tkt"
+  ],
+  "mbovis_2": [
+    "dnaA",
+    "gltX",
+    "gpsA",
+    "gyrB",
+    "pta2",
+    "tdk",
+    "tkt"
+  ],
+  "mcanis": [
+    "ack",
+    "cpn60",
+    "fdh",
+    "pta",
+    "purA",
+    "sar",
+    "tuf"
+  ],
+  "mcaseolyticus": [
+    "ack",
+    "cpn60",
+    "fdh",
+    "pta",
+    "purA",
+    "sar",
+    "tuf"
+  ],
+  "mcatarrhalis_achtman_6": [
+    "abcZ",
+    "adk",
+    "efp",
+    "fumC",
+    "glyBeta",
+    "mutY",
+    "ppa",
+    "trpE"
+  ],
+  "mflocculare": [
+    "adk",
+    "rpoB",
+    "tpiA"
+  ],
+  "mgallisepticum": [
+    "DUF3196",
+    "atpG",
+    "dppC",
+    "lgT",
+    "mraW",
+    "plsC",
+    "ugpA"
+  ],
+  "mgallisepticum_2": [
+    "atpG2",
+    "dnaA",
+    "fusA",
+    "rpoB",
+    "ruvB",
+    "uvrA"
+  ],
+  "mgenitalium": [
+    "MLST_adk",
+    "MLST_atpA",
+    "MLST_gmk",
+    "MLST_gyrB",
+    "MLST_pgm",
+    "MLST_ppa"
+  ],
+  "mhaemolytica": [
+    "adk",
+    "aroE",
+    "deoD",
+    "gapDH",
+    "gnd",
+    "mdh",
+    "zwf"
+  ],
+  "mhominis": [
+    "ftsY",
+    "gap",
+    "gyrB",
+    "tuf",
+    "uvrA"
+  ],
+  "mhominis_3": [
+    "ftsY",
+    "gap",
+    "gyrB",
+    "lmp1",
+    "lmp3",
+    "p120'",
+    "p60",
+    "tuf",
+    "uvrA",
+    "vaa"
+  ],
+  "mhyopneumoniae": [
+    "adk",
+    "rpoB",
+    "tpiA"
+  ],
+  "mhyorhinis": [
+    "adk",
+    "dnaA",
+    "gltX",
+    "gmk",
+    "gyrB",
+    "rpoB"
+  ],
+  "mhyosynoviae": [
+    "dnaA",
+    "ftsY",
+    "fusA",
+    "gyrB",
+    "recA",
+    "rpoB",
+    "uvrA"
+  ],
+  "miowae": [
+    "dppC",
+    "kdpA",
+    "leuS",
+    "rpoC",
+    "ulaA",
+    "valS"
+  ],
+  "mplutonius": [
+    "argE",
+    "galK",
+    "gbpB",
+    "purR"
+  ],
+  "mpneumoniae": [
+    "adk",
+    "arcC",
+    "atpA",
+    "glyA",
+    "gmk",
+    "gyrB",
+    "pgm",
+    "ppa"
+  ],
+  "msciuri": [
+    "ack",
+    "aroE",
+    "ftsZ",
+    "glpK",
+    "gmk",
+    "pta1",
+    "tpiA"
+  ],
+  "msynoviae": [
+    "adk",
+    "atpG",
+    "efp",
+    "gmk",
+    "nagC",
+    "ppa",
+    "recA"
+  ],
+  "mycobacteria_2": [
+    "L16",
+    "L19",
+    "L35",
+    "S12",
+    "S14Z",
+    "S19",
+    "S7",
+    "S8"
+  ],
+  "neisseria": [
+    "abcZ",
+    "adk",
+    "aroE",
+    "fumC",
+    "gdh",
+    "pdhC",
+    "pgm"
+  ],
+  "oralstrep": [
+    "aroE",
+    "ddl",
+    "gdh",
+    "gki",
+    "hexB",
+    "recP",
+    "xpt"
+  ],
+  "orhinotracheale": [
+    "adk",
+    "aroE",
+    "fumC",
+    "gdhA",
+    "mdh",
+    "pgi",
+    "pmi"
+  ],
+  "otsutsugamushi": [
+    "gpsA",
+    "mdh",
+    "nrdB",
+    "nuoF",
+    "ppdK",
+    "sucB",
+    "sucD"
+  ],
+  "pacnes_3": [
+    "CAMP2",
+    "aroE",
+    "atpD",
+    "gmk",
+    "guaA",
+    "lepA",
+    "sodA",
+    "tly"
+  ],
+  "paeruginosa": [
+    "acsA",
+    "aroE",
+    "guaA",
+    "mutL",
+    "nuoD",
+    "ppsA",
+    "trpE"
+  ],
+  "pdamselae": [
+    "glpF",
+    "gyrB",
+    "metG",
+    "pntA",
+    "pyrC",
+    "toxR"
+  ],
+  "pfluorescens": [
+    "glnS",
+    "gyrB",
+    "ileS",
+    "nuoD",
+    "recA",
+    "rpoB",
+    "rpoD"
+  ],
+  "pgingivalis": [
+    "ftsQ",
+    "gpdxJ",
+    "hagB",
+    "mcmA",
+    "pepO",
+    "pga",
+    "recA"
+  ],
+  "plarvae": [
+    "Natrans",
+    "clpC",
+    "ftsA",
+    "glpF",
+    "glpT",
+    "rpoB",
+    "sigF"
+  ],
+  "pmultocida": [
+    "mh_adk",
+    "mh_aroA",
+    "mh_deoD",
+    "mh_g6pd",
+    "mh_gdhA",
+    "mh_mdh",
+    "mh_pgi"
+  ],
+  "pmultocida_2": [
+    "RIRDC_adk",
+    "RIRDC_est",
+    "RIRDC_gdh",
+    "RIRDC_mdh",
+    "RIRDC_pgi",
+    "RIRDC_pmi",
+    "RIRDC_zwf"
+  ],
+  "ppentosaceus": [
+    "dalR",
+    "glnA",
+    "gyrB",
+    "leuS",
+    "pgI",
+    "pgm",
+    "pyc"
+  ],
+  "pputida": [
+    "argS",
+    "gyrB",
+    "ileS",
+    "nuoC",
+    "ppsA",
+    "recA",
+    "rpoB",
+    "rpoD"
+  ],
+  "proteus": [
+    "atpD",
+    "dnaJ",
+    "mdh",
+    "pyrC",
+    "recA",
+    "rpoD"
+  ],
+  "providencia": [
+    "fusA",
+    "gyrB",
+    "ileS",
+    "lepA",
+    "leuS"
+  ],
+  "psalmonis": [
+    "dnaK",
+    "efp",
+    "fumC",
+    "glyA",
+    "murG",
+    "rpoD",
+    "trpB"
+  ],
+  "ranatipestifer": [
+    "dnaB",
+    "gluD",
+    "gpi",
+    "groEL",
+    "gyrA",
+    "mdh",
+    "rpoB"
+  ],
+  "rhodococcus": [
+    "adk",
+    "gapdh",
+    "icl",
+    "mdh",
+    "recA",
+    "rpoB",
+    "tpi"
+  ],
+  "sagalactiae": [
+    "adhP",
+    "atr",
+    "glcK",
+    "glnA",
+    "pheS",
+    "sdhA",
+    "tkt"
+  ],
+  "salmonella": [
+    "aroC",
+    "dnaN",
+    "hemD",
+    "hisD",
+    "purE",
+    "sucA",
+    "thrA"
+  ],
+  "saureus": [
+    "arcC",
+    "aroE",
+    "glpF",
+    "gmk",
+    "pta",
+    "tpi",
+    "yqiL"
+  ],
+  "sbsec": [
+    "ddl",
+    "gki",
+    "glnA",
+    "mutS",
+    "mutS2",
+    "pheS",
+    "proS",
+    "pyrE",
+    "thrS",
+    "tpi"
+  ],
+  "scanis": [
+    "gki",
+    "gtr",
+    "murI",
+    "mutS",
+    "recP",
+    "xpt",
+    "yqiZ"
+  ],
+  "schromogenes": [
+    "arcC",
+    "dnaJ",
+    "fumC",
+    "glpF",
+    "hutU",
+    "menF",
+    "pta"
+  ],
+  "sdysgalactiae": [
+    "atoB",
+    "gki",
+    "gtr",
+    "murI",
+    "mutS",
+    "recP",
+    "xpt"
+  ],
+  "senterica_achtman_2": [
+    "aroC",
+    "dnaN",
+    "hemD",
+    "hisD",
+    "purE",
+    "sucA",
+    "thrA"
+  ],
+  "sepidermidis": [
+    "arcC",
+    "aroE",
+    "gtr",
+    "mutS",
+    "pyrR",
+    "tpiA",
+    "yqiL"
+  ],
+  "serratia": [
+    "adk",
+    "fumC",
+    "gyrB",
+    "icd",
+    "mdh",
+    "recA"
+  ],
+  "sgallolyticus": [
+    "aroE",
+    "glgB",
+    "nifS",
+    "p20",
+    "tkt",
+    "trpD",
+    "uvrA"
+  ],
+  "shaemolyticus": [
+    "Ribose_ABC",
+    "SH1431",
+    "SH_1200",
+    "arcC",
+    "cfxE",
+    "hemH",
+    "leuB"
+  ],
+  "shewanella": [
+    "16S_rRNA",
+    "adk",
+    "atpB",
+    "guaA",
+    "gyrB",
+    "mdh",
+    "recA",
+    "rpoS"
+  ],
+  "shominis": [
+    "arcC",
+    "glpK",
+    "gtr",
+    "pta",
+    "tpiA",
+    "tuf"
+  ],
+  "siniae": [
+    "dnaN",
+    "mutL",
+    "mutM",
+    "mutS",
+    "mutX",
+    "recD2",
+    "rnhC",
+    "yfhQ"
+  ],
+  "sinorhizobium": [
+    "asd",
+    "edd",
+    "gap",
+    "glnD",
+    "gnd",
+    "nuoE1",
+    "ordL2",
+    "recA",
+    "sucA",
+    "zwf"
+  ],
+  "smaltophilia": [
+    "atpD",
+    "gapA",
+    "guaA",
+    "mutM",
+    "nuoD",
+    "ppsA",
+    "recA"
+  ],
+  "smitis": [
+    "accA",
+    "gki",
+    "hom",
+    "oppC",
+    "patB",
+    "rlmN",
+    "tsf"
+  ],
+  "spneumoniae": [
+    "aroE",
+    "ddl",
+    "gdh",
+    "gki",
+    "recP",
+    "spi",
+    "xpt"
+  ],
+  "spseudintermedius": [
+    "ack",
+    "cpn60",
+    "fdh",
+    "pta",
+    "purA",
+    "sar",
+    "tuf"
+  ],
+  "spyogenes": [
+    "gki",
+    "gtr",
+    "murI",
+    "mutS",
+    "recP",
+    "xpt",
+    "yqiL"
+  ],
+  "ssuis": [
+    "aroA",
+    "cpn60",
+    "dpr",
+    "gki",
+    "mutS",
+    "recA",
+    "thrA"
+  ],
+  "staphlugdunensis": [
+    "aroE",
+    "dat",
+    "ddl",
+    "gmk",
+    "ldh",
+    "recA",
+    "yqiL"
+  ],
+  "sthermophilus": [
+    "carB",
+    "clpX",
+    "dnaA",
+    "murC",
+    "murE",
+    "pepN",
+    "pepX",
+    "pyrG",
+    "recA",
+    "rpoB"
+  ],
+  "streptomyces": [
+    "16S",
+    "atpD",
+    "gyrB",
+    "recA",
+    "rpoB",
+    "trpB"
+  ],
+  "streptothermophilus": [
+    "ddlA",
+    "glcK",
+    "proA",
+    "ptsI",
+    "serB",
+    "tkt"
+  ],
+  "suberis": [
+    "arcC",
+    "ddl",
+    "gki",
+    "recP",
+    "tdk",
+    "tpi",
+    "yqiL"
+  ],
+  "szooepidemicus": [
+    "arcC",
+    "nrdE",
+    "proS",
+    "spi",
+    "tdk",
+    "tpi",
+    "yqiL"
+  ],
+  "taylorella": [
+    "adk",
+    "fh",
+    "gltA",
+    "gyrB",
+    "shmt",
+    "txn",
+    "tyrB"
+  ],
+  "tenacibaculum": [
+    "atpA",
+    "dnaK",
+    "glyA",
+    "gyrB",
+    "infB",
+    "rlmN",
+    "tgt"
+  ],
+  "tpallidum": [
+    "TP0136",
+    "TP0548",
+    "TP0705"
+  ],
+  "tpyogenes": [
+    "adk",
+    "gyrB",
+    "leuA",
+    "metG",
+    "recA",
+    "tpi",
+    "tuf"
+  ],
+  "tvaginalis": [
+    "ALTS",
+    "DMRP",
+    "FT2A",
+    "GLUT",
+    "M6PI",
+    "SHMT",
+    "TRYP"
+  ],
+  "ureaplasma": [
+    "ftsH",
+    "rpL22",
+    "thrS",
+    "valS"
+  ],
+  "vcholerae": [
+    "adk",
+    "gyrB",
+    "mdh",
+    "metE",
+    "pntA",
+    "purM",
+    "pyrC"
+  ],
+  "vcholerae_2": [
+    "asd",
+    "dnaE",
+    "lap",
+    "pgm",
+    "recA"
+  ],
+  "vibrio": [
+    "atpA",
+    "gyrB",
+    "pyrH",
+    "recA"
+  ],
+  "vparahaemolyticus": [
+    "dnaE",
+    "dtdS",
+    "gyrB",
+    "pntA",
+    "pyrC",
+    "recA",
+    "tnaA"
+  ],
+  "vtapetis": [
+    "atpA",
+    "fstZ",
+    "gapA",
+    "hsp60",
+    "pyrH",
+    "rctB",
+    "recA",
+    "rpoA",
+    "rpoD",
+    "topA"
+  ],
+  "vvulnificus": [
+    "dtdS",
+    "glp",
+    "gyrB",
+    "lysA",
+    "mdh",
+    "metG",
+    "pntA",
+    "purM",
+    "pyrC",
+    "tnaA"
+  ],
+  "wolbachia": [
+    "coxA",
+    "fbpA",
+    "ftsZ",
+    "gatB",
+    "hcpA"
+  ],
+  "xfastidiosa": [
+    "cysG",
+    "gltT",
+    "holC",
+    "leuA",
+    "malF",
+    "nuoL",
+    "petC"
+  ],
+  "yersinia": [
+    "aarF",
+    "dfp",
+    "galR",
+    "glnS",
+    "hemA",
+    "rfaE",
+    "speA"
+  ],
+  "ypseudotuberculosis_achtman_3": [
+    "adk",
+    "argA",
+    "aroA",
+    "glnA",
+    "thrA",
+    "tmk",
+    "trpE"
+  ],
+  "yruckeri": [
+    "dnaJ",
+    "glnA",
+    "gyrB",
+    "hsp60",
+    "recA",
+    "thrA"
+  ]
+}

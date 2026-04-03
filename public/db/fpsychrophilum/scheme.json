@@ -1,0 +1,12 @@
+{
+  "name": "fpsychrophilum",
+  "loci": [
+    "atpA",
+    "dnaK",
+    "fumC",
+    "gyrB",
+    "murG",
+    "trpB",
+    "tuf"
+  ]
+}

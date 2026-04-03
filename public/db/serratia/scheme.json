@@ -1,0 +1,11 @@
+{
+  "name": "serratia",
+  "loci": [
+    "adk",
+    "fumC",
+    "gyrB",
+    "icd",
+    "mdh",
+    "recA"
+  ]
+}

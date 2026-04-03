@@ -1,0 +1,12 @@
+{
+  "name": "mgallisepticum",
+  "loci": [
+    "DUF3196",
+    "atpG",
+    "dppC",
+    "lgT",
+    "mraW",
+    "plsC",
+    "ugpA"
+  ]
+}

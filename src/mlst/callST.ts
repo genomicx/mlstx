@@ -16,16 +16,16 @@ export function callST(
 
   for (const lr of locusResults) {
     alleles[lr.locus] = lr.allele
-    if (lr.allele === 'no_hit') hasNoHit = true
-    if (lr.allele === 'novel') hasNovel = true
+    if (lr.allele === '-') hasNoHit = true
+    if (lr.allele.startsWith('~')) hasNovel = true
   }
 
   if (hasNoHit) {
-    return { filename, scheme, st: 'incomplete', alleles }
+    return { filename, scheme, st: '-', alleles }
   }
 
   if (hasNovel) {
-    return { filename, scheme, st: 'novel', alleles }
+    return { filename, scheme, st: '~', alleles }
   }
 
   // All loci have exact allele calls — look up ST
@@ -47,5 +47,5 @@ function lookupST(
     }
     if (match) return profile.st
   }
-  return 'novel'
+  return '~'
 }

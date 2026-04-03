@@ -1,0 +1,12 @@
+{
+  "name": "vparahaemolyticus",
+  "loci": [
+    "dnaE",
+    "dtdS",
+    "gyrB",
+    "pntA",
+    "pyrC",
+    "recA",
+    "tnaA"
+  ]
+}

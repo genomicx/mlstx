@@ -1,0 +1,12 @@
+{
+  "name": "chlamydiales",
+  "loci": [
+    "enoA",
+    "fumC",
+    "gatA",
+    "gidA",
+    "hemN",
+    "hflX",
+    "oppA"
+  ]
+}

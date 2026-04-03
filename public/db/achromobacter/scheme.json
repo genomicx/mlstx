@@ -1,0 +1,12 @@
+{
+  "name": "achromobacter",
+  "loci": [
+    "eno",
+    "gltB",
+    "lepA",
+    "nrdA",
+    "nuoL",
+    "nusA",
+    "rpoB"
+  ]
+}

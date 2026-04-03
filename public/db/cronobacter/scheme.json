@@ -1,0 +1,12 @@
+{
+  "name": "cronobacter",
+  "loci": [
+    "atpD",
+    "fusA",
+    "glnS",
+    "gltB",
+    "gyrB",
+    "infB",
+    "pps"
+  ]
+}

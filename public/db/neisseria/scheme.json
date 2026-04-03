@@ -1,0 +1,12 @@
+{
+  "name": "neisseria",
+  "loci": [
+    "abcZ",
+    "adk",
+    "aroE",
+    "fumC",
+    "gdh",
+    "pdhC",
+    "pgm"
+  ]
+}

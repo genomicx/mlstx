@@ -1,0 +1,11 @@
+{
+  "name": "mgenitalium",
+  "loci": [
+    "MLST_adk",
+    "MLST_atpA",
+    "MLST_gmk",
+    "MLST_gyrB",
+    "MLST_pgm",
+    "MLST_ppa"
+  ]
+}

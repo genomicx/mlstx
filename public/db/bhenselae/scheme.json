@@ -1,0 +1,13 @@
+{
+  "name": "bhenselae",
+  "loci": [
+    "16S",
+    "batR",
+    "ftsZ",
+    "gltA",
+    "groEL",
+    "nlpD",
+    "ribC",
+    "rpoB"
+  ]
+}

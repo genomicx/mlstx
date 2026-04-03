@@ -1,0 +1,13 @@
+{
+  "name": "cperfringens",
+  "loci": [
+    "colA",
+    "groEL",
+    "gyrB",
+    "nadA",
+    "pgk",
+    "plc",
+    "sigK",
+    "sodA"
+  ]
+}

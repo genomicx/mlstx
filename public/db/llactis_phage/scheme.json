@@ -1,0 +1,10 @@
+{
+  "name": "llactis_phage",
+  "loci": [
+    "lys",
+    "mcp",
+    "mtp",
+    "terL",
+    "tmp"
+  ]
+}

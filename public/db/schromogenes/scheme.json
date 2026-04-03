@@ -1,0 +1,12 @@
+{
+  "name": "schromogenes",
+  "loci": [
+    "arcC",
+    "dnaJ",
+    "fumC",
+    "glpF",
+    "hutU",
+    "menF",
+    "pta"
+  ]
+}

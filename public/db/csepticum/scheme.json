@@ -1,0 +1,12 @@
+{
+  "name": "csepticum",
+  "loci": [
+    "ddl",
+    "dnaK",
+    "glpK",
+    "groEL",
+    "gyrA",
+    "recA",
+    "tpi"
+  ]
+}

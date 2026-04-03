@@ -1,0 +1,10 @@
+{
+  "name": "halobacteria",
+  "loci": [
+    "EF-2",
+    "atpB",
+    "radA",
+    "rpoB'",
+    "secY"
+  ]
+}

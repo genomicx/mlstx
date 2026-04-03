@@ -1,0 +1,13 @@
+{
+  "name": "gallibacterium",
+  "loci": [
+    "adk",
+    "atpD",
+    "fumC",
+    "gyrB",
+    "infB",
+    "mdh",
+    "recN",
+    "thdF"
+  ]
+}

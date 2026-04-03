@@ -1,0 +1,15 @@
+{
+  "name": "vvulnificus",
+  "loci": [
+    "dtdS",
+    "glp",
+    "gyrB",
+    "lysA",
+    "mdh",
+    "metG",
+    "pntA",
+    "purM",
+    "pyrC",
+    "tnaA"
+  ]
+}

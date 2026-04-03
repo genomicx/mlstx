@@ -1,0 +1,12 @@
+{
+  "name": "mhyosynoviae",
+  "loci": [
+    "dnaA",
+    "ftsY",
+    "fusA",
+    "gyrB",
+    "recA",
+    "rpoB",
+    "uvrA"
+  ]
+}

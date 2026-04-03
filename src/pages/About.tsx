@@ -6,16 +6,19 @@ export function About() {
       <section>
         <h2>About MLSTX</h2>
         <p>
-          MLSTX is a browser-based Multi-Locus Sequence Typing tool — a WebAssembly clone of{' '}
-          <a href="https://github.com/tseemann/mlst" target="_blank" rel="noopener noreferrer">
-            tseemann/mlst
-          </a>. Drop in one or more bacterial genome assemblies in FASTA format and get
-          sequence type assignments in seconds, with no installation or data upload required.
+          MLSTX is a browser-based MLST typing and phylogenetics tool. Drop in one or more
+          bacterial genome assemblies in FASTA format and get sequence type assignments,
+          a phylogenetic tree, and assembly QC — all in seconds, with no installation or
+          data upload required.
         </p>
         <p>
-          Scheme detection is fully automatic. MLSTX identifies the most likely scheme from
-          your assembly, runs the allele alignments, and assigns a sequence type — all
-          in one step.
+          Output format matches{' '}
+          <a href="https://github.com/tseemann/mlst" target="_blank" rel="noopener noreferrer">
+            tseemann/mlst
+          </a>{' '}
+          (allele notation, ST assignment, JSON export). Scheme detection is fully automatic
+          — MLSTX identifies the most likely scheme per genome, so mixed-species uploads work
+          correctly.
         </p>
         <div className="privacy-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -31,13 +34,14 @@ export function About() {
       <section>
         <h2>Features</h2>
         <ul>
-          <li>Auto-detects MLST scheme from your assembly — no scheme selection needed</li>
-          <li>162+ schemes covering major bacterial pathogens (from PubMLST via tseemann/mlst)</li>
-          <li>Exact, novel, partial, and missing allele calls with clear visual badging</li>
-          <li>Multi-sample batch processing — upload and type any number of assemblies at once</li>
-          <li>Neighbour-joining phylogenetic tree from concatenated allele alignment (2+ samples)</li>
-          <li>CSV export of all results</li>
-          <li>Works offline after first load — scheme databases are cached in your browser</li>
+          <li>Auto-detects MLST scheme per genome — no scheme selection needed; mixed-species uploads work</li>
+          <li>162+ schemes covering major bacterial pathogens (PubMLST via tseemann/mlst)</li>
+          <li>Allele calls match tseemann/mlst notation: exact, ~novel, - no-hit</li>
+          <li>Multi-sample batch processing — type any number of assemblies at once</li>
+          <li>Phylogenetic tree from concatenated allele alignment (MUSCLE + FastTree, 2+ samples)</li>
+          <li>Species-specific assembly QC: N50, contig count, genome size, GC%, Ns/100kbp (thresholds from qualibact)</li>
+          <li>CSV and JSON export (tseemann/mlst --full compatible)</li>
+          <li>Works offline after first load — scheme databases cached in your browser</li>
         </ul>
       </section>
 
@@ -94,11 +98,12 @@ export function About() {
       <section>
         <h2>Citation</h2>
         <p>
-          MLSTX produces output compatible with{' '}
+          MLSTX uses the same allele databases and output conventions as{' '}
           <a href="https://github.com/tseemann/mlst" target="_blank" rel="noopener noreferrer">
             tseemann/mlst
           </a>{' '}
-          and extends it with phylogenetics and multi-organism batch support. If you use MLSTX in your research, please cite:
+          and extends it with browser-based phylogenetics, batch processing, and assembly QC.
+          If you use MLSTX in your research, please cite:
         </p>
         <blockquote style={{ borderLeft: '4px solid var(--gx-accent)', paddingLeft: '1rem', color: 'var(--gx-text-muted)', fontStyle: 'italic', margin: '0.75rem 0' }}>
           Seemann T. mlst. GitHub. https://github.com/tseemann/mlst

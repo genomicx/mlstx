@@ -1,0 +1,12 @@
+{
+  "name": "bpseudomallei",
+  "loci": [
+    "ace",
+    "gltB",
+    "gmhD",
+    "lepA",
+    "lipA",
+    "narK",
+    "ndh"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "aphagocytophilum",
+  "loci": [
+    "atpA",
+    "dnaN",
+    "fumC",
+    "glyA",
+    "mdh",
+    "pheS",
+    "sucA"
+  ]
+}

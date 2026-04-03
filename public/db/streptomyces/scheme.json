@@ -1,0 +1,11 @@
+{
+  "name": "streptomyces",
+  "loci": [
+    "16S",
+    "atpD",
+    "gyrB",
+    "recA",
+    "rpoB",
+    "trpB"
+  ]
+}

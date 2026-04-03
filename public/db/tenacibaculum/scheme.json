@@ -1,0 +1,12 @@
+{
+  "name": "tenacibaculum",
+  "loci": [
+    "atpA",
+    "dnaK",
+    "glyA",
+    "gyrB",
+    "infB",
+    "rlmN",
+    "tgt"
+  ]
+}

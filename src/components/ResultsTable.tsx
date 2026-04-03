@@ -54,16 +54,16 @@ function statusVariant(classification: string): 'success' | 'warning' | 'muted' 
 
 function classifyResult(val: string | undefined): string {
   if (!val) return 'missing'
-  if (val === 'no_hit' || val === 'incomplete') return 'nohit'
-  if (val === 'novel') return 'novel'
+  if (val === '-') return 'nohit'
+  if (val.startsWith('~')) return 'novel'
   return 'exact'
 }
 
 function statusLabel(val: string | undefined): string {
   if (!val) return 'Missing'
-  if (val === 'no_hit') return 'No hit found'
-  if (val === 'incomplete') return 'Incomplete — missing loci'
-  if (val === 'novel') return 'Novel — above threshold but not exact'
+  if (val === '-') return 'No hit found (below identity/coverage threshold)'
+  if (val === '~') return 'Novel ST — alleles above threshold but combination not in database'
+  if (val.startsWith('~')) return `Novel allele — closest match: ${val.slice(1)}`
   return `Exact match: ${val}`
 }
 

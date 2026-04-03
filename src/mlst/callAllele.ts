@@ -17,7 +17,7 @@ export function callAllele(
   alleleLengths: Record<string, number>,
 ): LocusResult {
   if (hits.length === 0) {
-    return { locus, allele: 'no_hit', identity: 0, coverage: 0, bestHit: null }
+    return { locus, allele: '-', identity: 0, coverage: 0, bestHit: null }
   }
 
   let bestHit: AlignmentHit | null = null
@@ -49,17 +49,17 @@ export function callAllele(
   if (bestIdentity < IDENTITY_THRESHOLD || bestCoverage < COVERAGE_THRESHOLD) {
     return {
       locus,
-      allele: 'no_hit',
+      allele: '-',
       identity: bestIdentity,
       coverage: bestCoverage,
       bestHit,
     }
   }
 
+  const alleleNumber = extractAlleleNumber(bestHit.targetName)
+
   if (bestIdentity === 1.0 && bestCoverage >= 1.0) {
-    // Exact match — extract allele number from target name
-    // Target name format: "locusName_alleleNumber" e.g. "adk_1"
-    const alleleNumber = extractAlleleNumber(bestHit.targetName)
+    // Exact match
     return {
       locus,
       allele: alleleNumber,
@@ -69,10 +69,10 @@ export function callAllele(
     }
   }
 
-  // Above threshold but not exact
+  // Above threshold but not exact — report closest allele with ~ prefix (tseemann convention)
   return {
     locus,
-    allele: 'novel',
+    allele: `~${alleleNumber}`,
     identity: bestIdentity,
     coverage: bestCoverage,
     bestHit,
