@@ -46,8 +46,12 @@ export async function loadSchemeData(schemeName: string): Promise<SchemeData> {
   const localBase = `/db/${schemeName}`
 
   async function tryFetch(path: string): Promise<Response> {
-    const cdnRes = await fetch(`${cdnBase}/${path}`)
-    if (cdnRes.ok) return cdnRes
+    try {
+      const cdnRes = await fetch(`${cdnBase}/${path}`)
+      if (cdnRes.ok) return cdnRes
+    } catch {
+      // CDN unreachable (CORS, network) — fall through to local
+    }
     return fetch(`${localBase}/${path}`)
   }
 
