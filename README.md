@@ -1,83 +1,46 @@
-# mlstx
+# MLSTX
 
-Browser-based Multi-Locus Sequence Typing (MLST) — no server required.
+> Browser-based Multi-Locus Sequence Typing — no server required.
 
-mlstx runs [minimap2](https://github.com/lh3/minimap2) compiled to WebAssembly via [Aioli/biowasm](https://biowasm.com) to type bacterial genomes entirely in your browser. No data leaves your machine.
-
-**Live demo:** [mlstx.vercel.app](https://mlstx.vercel.app)
+MLSTX is a WebAssembly clone of [tseemann/mlst](https://github.com/tseemann/mlst). Drop in one or more bacterial genome assemblies in FASTA format and get sequence type assignments in seconds. Scheme detection is fully automatic — MLSTX identifies the most likely scheme from your assembly, runs the allele alignments, and assigns a sequence type, all in one step. No installation or data upload required.
 
 ## Features
 
-- Upload genome assemblies (FASTA, gzipped FASTA) and get sequence types in seconds
-- Supports multiple MLST schemes: *E. coli*, *Salmonella*, *S. aureus*, and more
-- All processing happens client-side — your data stays private
-- Dark/light mode
-- Export results as CSV
+- Auto-detects MLST scheme from your assembly — no scheme selection needed
+- 162+ schemes covering major bacterial pathogens (from PubMLST via tseemann/mlst)
+- Exact, novel, partial, and missing allele calls with clear visual badging
+- Multi-sample batch processing — upload and type any number of assemblies at once
+- Neighbour-joining phylogenetic tree from concatenated allele alignment (2+ samples)
+- CSV export of all results
+- Works offline after first load — scheme databases are cached in your browser
 
-## Supported schemes
+## Tech Stack
 
-| Scheme | Loci |
-|--------|------|
-| ecoli | dinB, icdA, pabB, polB, putP, trpA, trpB, uidA |
-| ecoli_achtman_4 | adk, fumC, gyrB, icd, mdh, purA, recA |
-| salmonella | aroC, dnaN, hemD, hisD, purE, sucA, thrA |
-| saureus | arcC, aroE, glpF, gmk, pta, tpi, yqiL |
+- **minimap2** — sequence alignment (via Aioli/biowasm WebAssembly)
+- **FastTree** — phylogenetic tree inference (WebAssembly)
+- **React + Vite** — frontend framework
+- **Cloudflare Pages** — global CDN hosting
 
-Allele databases are sourced from [tseemann/mlst](https://github.com/tseemann/mlst) (PubMLST).
-
-## Development
+## Getting Started
 
 ```bash
 npm install
 npm run dev
 ```
 
-### Run tests
+Open http://localhost:5173
+
+## Running Tests
 
 ```bash
-npm test
+npm test           # unit tests
+npm run test:e2e   # end-to-end tests (requires build first)
 ```
 
-### Build for production
+## Contributing
 
-```bash
-npm run build
-```
+Contributions welcome. Please open an issue first to discuss changes.
 
-### Update MLST databases
+## License
 
-Fetches the latest allele databases from PubMLST via [tseemann/mlst](https://github.com/tseemann/mlst):
-
-```bash
-npm run fetch-db              # all schemes
-npm run fetch-db -- ecoli     # single scheme
-```
-
-## Benchmarking
-
-A Python benchmark script validates that the minimap2-based approach produces the same results as [Seemann's mlst](https://github.com/tseemann/mlst) CLI tool.
-
-Requires [pixi](https://pixi.sh):
-
-```bash
-pixi install
-pixi run python scripts/benchmark.py
-pixi run python scripts/benchmark.py --input-dir test_data --scheme salmonella
-```
-
-## How it works
-
-1. The genome assembly is loaded and all contigs are merged into a single sequence
-2. All allele sequences for every locus in the selected scheme are mapped against the genome in a single `minimap2 -c` call via WebAssembly
-3. PAF output is parsed and the best hit per locus is selected using 90% identity and 90% coverage thresholds
-4. Exact matches (100% identity, full coverage) are assigned allele numbers; the allele combination is looked up in the ST profiles database
-
-## Deploy
-
-```bash
-npx vercel --prod
-```
-
-## Author
-
-[Nabil-Fareed Alikhan](https://www.happykhan.com) — Centre for Genomic Pathogen Surveillance, University of Oxford
+GPL-3.0 — see [LICENSE](LICENSE)
