@@ -4,9 +4,10 @@ import type { MLSTResult } from '../mlst/types'
 interface ResultsTableProps {
   results: MLSTResult[]
   loci: string[]
+  onRemove?: (filename: string) => void
 }
 
-export function ResultsTable({ results, loci }: ResultsTableProps) {
+export function ResultsTable({ results, loci, onRemove }: ResultsTableProps) {
   if (results.length === 0) return null
 
   return (
@@ -14,6 +15,7 @@ export function ResultsTable({ results, loci }: ResultsTableProps) {
       <table className="results-table">
         <thead>
           <tr>
+            {onRemove && <th className="remove-col" />}
             <th>File</th>
             <th>ST</th>
             {loci.map((l) => (
@@ -24,6 +26,18 @@ export function ResultsTable({ results, loci }: ResultsTableProps) {
         <tbody>
           {results.map((r) => (
             <tr key={r.filename}>
+              {onRemove && (
+                <td className="remove-col">
+                  <button
+                    className="remove-row-btn"
+                    onClick={() => onRemove(r.filename)}
+                    title={`Remove ${r.filename}`}
+                    aria-label={`Remove ${r.filename}`}
+                  >
+                    ×
+                  </button>
+                </td>
+              )}
               <td className="filename-cell">{r.filename}</td>
               <td className="st-cell" title={statusLabel(r.st)}>
                 <StatusBadge variant={statusVariant(classifyResult(r.st))}>{r.st}</StatusBadge>

@@ -1,23 +1,17 @@
 /**
  * qualibact.ts
  *
- * Fetches QC thresholds from the qualibact project and applies them to
- * assembly stats computed from parsed FASTA files.
+ * Fetches QC thresholds from per-species summary.csv files in the qualibact project.
+ * Uses lower_bound / upper_bound columns derived from genome distributions.
  *
- * Only Quast-computable metrics are used (no CheckM/Speciator/Ariba/Sylph):
- *   N50, # contigs, Total length, GC (%), Ns per 100 kbp
+ * Only metrics computable from the FASTA assembly are checked:
+ *   N50, number of contigs, genome size, GC content
  */
 
 import type { AssemblyStats } from './assemblyStats'
 
-const CRITERIA_URL =
-  'https://raw.githubusercontent.com/happykhan/qualibact/main/test_criteria.csv'
-
-export interface QCCriterion {
-  field: string
-  operator: string
-  value: number
-}
+const QUALIBACT_BASE =
+  'https://raw.githubusercontent.com/happykhan/qualibact/main/docs'
 
 export type QCStatus = 'pass' | 'warn' | 'fail' | 'unknown'
 
@@ -35,7 +29,7 @@ export interface QCResult {
   checks: QCCheck[]
 }
 
-/** Map MLST scheme name → species name used in qualibact criteria */
+/** Map MLST scheme name → species display name */
 const SCHEME_TO_SPECIES: Record<string, string> = {
   abaumannii: 'Acinetobacter baumannii',
   abaumannii_2: 'Acinetobacter baumannii',
@@ -48,11 +42,9 @@ const SCHEME_TO_SPECIES: Record<string, string> = {
   efaecium: 'Enterococcus faecium',
   hinfluenzae: 'Haemophilus influenzae',
   hpylori: 'Helicobacter pylori',
-  koxytoca: 'Klebsiella pneumoniae',
+  koxytoca: 'Klebsiella oxytoca',
   kpneumoniae: 'Klebsiella pneumoniae',
   kpneumoniae_2: 'Klebsiella pneumoniae',
-  mgenitalium: 'Mycoplasma genitalium',
-  mpneumoniae: 'Mycoplasma pneumoniae',
   nmeningitidis: 'Neisseria meningitidis',
   ngonorrhoeae: 'Neisseria gonorrhoeae',
   paeruginosa: 'Pseudomonas aeruginosa',
@@ -66,57 +58,84 @@ const SCHEME_TO_SPECIES: Record<string, string> = {
   spyogenes: 'Streptococcus pyogenes',
 }
 
-/** Quast field names → AssemblyStats keys */
-const FIELD_MAP: Record<string, keyof AssemblyStats> = {
-  'N50': 'n50',
-  '# contigs (>= 0 bp)': 'contigCount',
-  'Total length (>= 0 bp)': 'totalLength',
-  'GC (%)': 'gcPercent',
-  'Ns per 100 kbp': 'nsPer100k',
+/** Which summary.csv metrics map to AssemblyStats fields, and any unit conversion */
+const METRIC_MAP: Record<
+  string,
+  { key: keyof AssemblyStats; label: string; scale?: number }
+> = {
+  N50:          { key: 'n50',         label: 'N50' },
+  number:       { key: 'contigCount', label: '# contigs' },
+  Genome_Size:  { key: 'totalLength', label: 'Genome size (bp)' },
+  // GC_Content stored as fraction (0.506); gcPercent is % (50.6) → multiply by 100
+  GC_Content:   { key: 'gcPercent',   label: 'GC (%)', scale: 100 },
 }
 
-interface RawCriterion {
-  species: string
-  assembly_type: string
-  software: string
-  field: string
-  operator: string
-  value: string
+/** Cache per species to avoid re-fetching */
+const cache = new Map<string, QCCheck[] | null>()
+
+/** Convert "Genus species" → URL path component "Genus/Genus_species" */
+function speciesPath(species: string): string {
+  const parts = species.trim().split(/\s+/)
+  const genus = parts[0]
+  const epithet = parts[1] ?? ''
+  return `${genus}/${genus}_${epithet}`
 }
 
-let cachedCriteria: RawCriterion[] | null = null
+async function fetchChecks(
+  stats: AssemblyStats,
+  species: string,
+): Promise<QCCheck[]> {
+  const path = speciesPath(species)
+  const url = `${QUALIBACT_BASE}/${path}/summary.csv`
 
-async function loadCriteria(): Promise<RawCriterion[]> {
-  if (cachedCriteria) return cachedCriteria
-
-  const res = await fetch(CRITERIA_URL)
-  if (!res.ok) throw new Error(`Failed to fetch qualibact criteria: ${res.status}`)
+  const res = await fetch(url)
+  if (!res.ok) return []
 
   const text = await res.text()
   const lines = text.trim().split('\n')
+  if (lines.length < 2) return []
+
   const header = lines[0].split(',')
+  const metricIdx = header.indexOf('metric')
+  const lowerIdx = header.indexOf('lower_bound')
+  const upperIdx = header.indexOf('upper_bound')
+  if (metricIdx < 0 || lowerIdx < 0 || upperIdx < 0) return []
 
-  const criteria: RawCriterion[] = []
+  const checks: QCCheck[] = []
+
   for (let i = 1; i < lines.length; i++) {
-    const fields = lines[i].split(',')
-    const row: Record<string, string> = {}
-    header.forEach((h, idx) => { row[h] = fields[idx]?.trim() ?? '' })
-    criteria.push(row as unknown as RawCriterion)
+    const cols = lines[i].split(',')
+    const metric = cols[metricIdx]?.trim()
+    const mapping = METRIC_MAP[metric]
+    if (!mapping) continue
+
+    const rawLower = cols[lowerIdx]?.trim()
+    const rawUpper = cols[upperIdx]?.trim()
+    const scale = mapping.scale ?? 1
+    const value = (stats[mapping.key] as number) / scale
+
+    if (rawLower && !isNaN(Number(rawLower))) {
+      const lower = Number(rawLower)
+      checks.push({
+        field: mapping.label,
+        value: stats[mapping.key] as number,
+        threshold: `>= ${(lower * scale).toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
+        status: value >= lower ? 'pass' : 'fail',
+      })
+    }
+
+    if (rawUpper && !isNaN(Number(rawUpper))) {
+      const upper = Number(rawUpper)
+      checks.push({
+        field: mapping.label,
+        value: stats[mapping.key] as number,
+        threshold: `<= ${(upper * scale).toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
+        status: value <= upper ? 'pass' : 'fail',
+      })
+    }
   }
 
-  cachedCriteria = criteria
-  return criteria
-}
-
-function applyOp(value: number, operator: string, threshold: number): boolean {
-  switch (operator) {
-    case '>=': return value >= threshold
-    case '<=': return value <= threshold
-    case '>': return value > threshold
-    case '<': return value < threshold
-    case '=': return value === threshold
-    default: return true
-  }
+  return checks
 }
 
 export async function runQC(
@@ -125,49 +144,26 @@ export async function runQC(
 ): Promise<QCResult> {
   const species = SCHEME_TO_SPECIES[scheme] ?? null
 
-  let criteria: RawCriterion[]
-  try {
-    criteria = await loadCriteria()
-  } catch {
-    return { filename: stats.filename, species, overall: 'unknown', checks: [] }
+  if (!species) {
+    return { filename: stats.filename, species: null, overall: 'unknown', checks: [] }
   }
 
-  // Filter to Quast rules only, applicable to this species + assembly_type=all or short
-  const allCriteria = criteria.filter(
-    (c) =>
-      c.software === 'Quast' &&
-      (c.species === 'all' || c.species === species) &&
-      (c.assembly_type === 'all' || c.assembly_type === 'short') &&
-      !c.field.startsWith('speciesName') &&
-      FIELD_MAP[c.field],
-  )
-
-  // For fields that have species-specific criteria, drop the generic 'all' fallback —
-  // otherwise the generic thresholds (designed for small genomes) conflict with
-  // species-specific ones (e.g. generic Total length < 1.2Mb would fail E. coli)
-  const speciesFields = new Set(
-    allCriteria.filter((c) => c.species === species).map((c) => c.field)
-  )
-  const applicable = allCriteria.filter(
-    (c) => c.species === species || !speciesFields.has(c.field)
-  )
-
-  const checks: QCCheck[] = []
-
-  for (const criterion of applicable) {
-    const statKey = FIELD_MAP[criterion.field]
-    if (!statKey) continue
-
-    const value = stats[statKey] as number
-    const threshold = parseFloat(criterion.value)
-    const passes = applyOp(value, criterion.operator, threshold)
-
-    checks.push({
-      field: criterion.field,
-      value,
-      threshold: `${criterion.operator} ${criterion.value}`,
-      status: passes ? 'pass' : 'fail',
-    })
+  let checks: QCCheck[]
+  if (cache.has(species)) {
+    const template = cache.get(species)
+    if (!template) {
+      return { filename: stats.filename, species, overall: 'unknown', checks: [] }
+    }
+    // Re-evaluate thresholds against this sample's stats
+    checks = await fetchChecks(stats, species)
+  } else {
+    try {
+      checks = await fetchChecks(stats, species)
+      cache.set(species, checks)
+    } catch {
+      cache.set(species, null)
+      return { filename: stats.filename, species, overall: 'unknown', checks: [] }
+    }
   }
 
   const overall: QCStatus =

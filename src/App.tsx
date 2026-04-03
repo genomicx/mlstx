@@ -44,6 +44,10 @@ function AnalysisPage() {
   const [treeError, setTreeError] = useState('')
   const [logLines, setLogLines] = useState<string[]>([])
 
+  // UI state
+  const [showResults, setShowResults] = useState(true)
+  const [showQC, setShowQC] = useState(true)
+
   // Track whether scheme was manually overridden
   const manualSchemeRef = useRef('')
 
@@ -166,16 +170,20 @@ function AnalysisPage() {
         })
 
         allResults.push(...fileResults)
-        setResults([...allResults])
 
         // Compute assembly stats + QC for this file
         const stats = computeStats(parsed)
         newStatsMap[parsed.filename] = stats
-        setStatsMap({ ...newStatsMap })
 
         const qc = await runQC(stats, scheme)
         allQc.push(qc)
-        setQcResults([...allQc])
+
+        // Batch UI updates every 5 files to reduce re-renders on large uploads
+        if ((i + 1) % 5 === 0 || i === uploadedFiles.length - 1) {
+          setResults([...allResults])
+          setStatsMap({ ...newStatsMap })
+          setQcResults([...allQc])
+        }
 
         // Keep the last scheme's data for tree building
         setSchemeData(data)
@@ -227,6 +235,19 @@ function AnalysisPage() {
     await runWithScheme(files, selectedScheme)
   }, [files, selectedScheme, runWithScheme])
 
+  const handleRemoveResult = useCallback((filename: string) => {
+    setResults((prev) => prev.filter((r) => r.filename !== filename))
+    setQcResults((prev) => prev.filter((r) => r.filename !== filename))
+    setStatsMap((prev) => {
+      const next = { ...prev }
+      delete next[filename]
+      return next
+    })
+    // Clear tree since the sample set changed
+    setNewick('')
+    setAlignment('')
+  }, [])
+
   const handleBuildTree = useCallback(async () => {
     if (!schemeData || results.length < 2) return
 
@@ -258,7 +279,7 @@ function AnalysisPage() {
     }
   }, [results, schemeData])
 
-  const showRunButton = files.length > 0 && selectedScheme !== '' && !running
+  const showRunButton = files.length > 0 && selectedScheme !== '' && !running && !treeBuilding
 
   return (
     <>
@@ -303,18 +324,21 @@ function AnalysisPage() {
       {results.length > 0 && (
         <section className="results">
           <div className="results-header">
-            <h2>Results</h2>
-            <div className="results-actions">
+            <div className="results-header-left">
               <button
-                className="export-button"
-                onClick={() => exportCSV(results, loci)}
+                className="section-toggle"
+                onClick={() => setShowResults((v) => !v)}
+                aria-label={showResults ? 'Collapse results' : 'Expand results'}
               >
+                <span className={`chevron ${showResults ? 'open' : ''}`}>›</span>
+              </button>
+              <h2>Results ({results.length})</h2>
+            </div>
+            <div className="results-actions">
+              <button className="export-button" onClick={() => exportCSV(results, loci)}>
                 Export CSV
               </button>
-              <button
-                className="export-button"
-                onClick={() => exportJSON(results)}
-              >
+              <button className="export-button" onClick={() => exportJSON(results)}>
                 Export JSON
               </button>
               {results.length >= 2 && (
@@ -328,12 +352,17 @@ function AnalysisPage() {
               )}
             </div>
           </div>
-          <ResultsTable results={results} loci={loci} />
+          {showResults && <ResultsTable results={results} loci={loci} onRemove={handleRemoveResult} />}
         </section>
       )}
 
       {qcResults.length > 0 && (
-        <QCPanel qcResults={qcResults} statsMap={statsMap} />
+        <QCPanel
+          qcResults={qcResults}
+          statsMap={statsMap}
+          collapsed={!showQC}
+          onToggle={() => setShowQC((v) => !v)}
+        />
       )}
 
       {treeBuilding && (

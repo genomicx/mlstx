@@ -393,6 +393,78 @@
   scrollbar-color: var(--gx-border) transparent;
 }
 
+/* ── Section toggle (collapsible) ───────────── */
+.results-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  color: var(--gx-text-muted);
+}
+
+.chevron {
+  display: inline-block;
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+  transform: rotate(0deg);
+}
+
+.chevron.open {
+  transform: rotate(90deg);
+}
+
+/* ── Scrollable tables (cap height for large batches) ── */
+.results-table-container,
+.qc-table-container {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+/* ── Row remove button ───────────────────────── */
+.remove-col {
+  width: 28px;
+  padding: 0 0.25rem !important;
+}
+
+.remove-row-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gx-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0 0.25rem;
+  border-radius: 3px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.remove-row-btn:hover {
+  color: var(--gx-error, #ef4444);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* ── QC header (matches results-header) ──────── */
+.qc-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.qc-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gx-text);
+}
+
 /* ── QC Section ──────────────────────────────── */
 .qc-section {
   background: var(--gx-bg-alt);
@@ -403,12 +475,6 @@
   box-shadow: var(--gx-shadow);
 }
 
-.qc-section h2 {
-  margin: 0 0 0.25rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--gx-text);
-}
 
 .qc-source {
   margin: 0 0 1rem;
