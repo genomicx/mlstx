@@ -15,6 +15,18 @@ declare const Aioli: any
 
 const DETECT_DB_URL = 'https://static.genomicx.org/db/mlstx/detect.fa.gz'
 
+/**
+ * Schemes excluded from auto-detection (mirrors tseemann/mlst $EXCLUDE).
+ * These are alias/ambiguous schemes — users can still select them manually.
+ * ecoli → ecoli_achtman_4 (preferred), abaumannii → abaumannii_2 (preferred), etc.
+ */
+const AUTODETECT_EXCLUDE = new Set([
+  'ecoli',
+  'abaumannii',
+  'vcholerae_2',
+  'senterica_achtman_2',
+])
+
 let cachedDetectFasta: string | null = null
 
 async function loadDetectFasta(): Promise<string> {
@@ -103,11 +115,13 @@ export async function detectScheme(
   }
 
   // Sort by number of distinct loci hit (primary), then total hits (secondary)
-  const sorted = Array.from(schemeCounts.values()).sort((a, b) => {
-    const lociDiff = b.lociHit.size - a.lociHit.size
-    if (lociDiff !== 0) return lociDiff
-    return b.hits - a.hits
-  })
+  const sorted = Array.from(schemeCounts.values())
+    .filter((r) => !AUTODETECT_EXCLUDE.has(r.scheme))
+    .sort((a, b) => {
+      const lociDiff = b.lociHit.size - a.lociHit.size
+      if (lociDiff !== 0) return lociDiff
+      return b.hits - a.hits
+    })
 
   return sorted
 }

@@ -1,8 +1,8 @@
 import type { AlignmentHit, LocusResult } from './types'
 
-// Match tseemann/mlst defaults: --minid 95, --mincov 10
-const IDENTITY_THRESHOLD = 0.95
-const COVERAGE_THRESHOLD = 0.10
+/** tseemann/mlst defaults */
+export const DEFAULT_MINID = 95
+export const DEFAULT_MINCOV = 10
 
 /**
  * Given all alignment hits for a locus (across all alleles and all contigs),
@@ -15,7 +15,11 @@ export function callAllele(
   locus: string,
   hits: AlignmentHit[],
   alleleLengths: Record<string, number>,
+  minid = DEFAULT_MINID,
+  mincov = DEFAULT_MINCOV,
 ): LocusResult {
+  const IDENTITY_THRESHOLD = minid / 100
+  const COVERAGE_THRESHOLD = mincov / 100
   if (hits.length === 0) {
     return { locus, allele: '-', identity: 0, coverage: 0, bestHit: null }
   }

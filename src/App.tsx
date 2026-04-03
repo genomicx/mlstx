@@ -13,7 +13,8 @@ import { buildTree } from './mlst/buildTree'
 import { detectScheme } from './mlst/autoDetect'
 import { computeStats } from './mlst/assemblyStats'
 import { runQC } from './mlst/qualibact'
-import type { MLSTResult, SchemeData } from './mlst/types'
+import type { MLSTResult, SchemeData, MLSTOptions } from './mlst/types'
+import { DEFAULT_MINID, DEFAULT_MINCOV } from './mlst/callAllele'
 import type { AssemblyStats } from './mlst/assemblyStats'
 import type { QCResult } from './mlst/qualibact'
 import { APP_VERSION } from './lib/version'
@@ -43,6 +44,10 @@ function AnalysisPage() {
   const [treeProgressPct, setTreeProgressPct] = useState(0)
   const [treeError, setTreeError] = useState('')
   const [logLines, setLogLines] = useState<string[]>([])
+
+  // MLST options
+  const [options, setOptions] = useState<MLSTOptions>({ minid: DEFAULT_MINID, mincov: DEFAULT_MINCOV, minscore: 50 })
+  const [showOptions, setShowOptions] = useState(false)
 
   // UI state
   const [showResults, setShowResults] = useState(true)
@@ -87,7 +92,7 @@ function AnalysisPage() {
       const mlstResults = await runMLST(parsedFiles, data, (msg, pct) => {
         setProgress(msg)
         setProgressPct(pct)
-      })
+      }, options)
 
       setResults(mlstResults)
 
@@ -108,7 +113,7 @@ function AnalysisPage() {
     } finally {
       setRunning(false)
     }
-  }, [])
+  }, [options])
 
   /** Run MLST per-file with independent scheme detection (tseemann/mlst style). */
   const runPerFile = useCallback(async (uploadedFiles: File[]) => {
@@ -167,7 +172,7 @@ function AnalysisPage() {
           const overallPct = ((i + pct / 100) / uploadedFiles.length) * 100
           setProgress(msg)
           setProgressPct(overallPct)
-        })
+        }, options)
 
         allResults.push(...fileResults)
 
@@ -196,8 +201,7 @@ function AnalysisPage() {
     } finally {
       setRunning(false)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [options])
 
   const handleFilesChange = useCallback(async (newFiles: File[]) => {
     setFiles(newFiles)
@@ -307,6 +311,54 @@ function AnalysisPage() {
             </button>
           )}
         </div>
+      </div>
+
+      <div className="options-bar">
+        <button
+          className="options-toggle"
+          onClick={() => setShowOptions((v) => !v)}
+          aria-expanded={showOptions}
+        >
+          <span className={`chevron ${showOptions ? 'open' : ''}`}>›</span>
+          {' '}Advanced Options
+        </button>
+        {showOptions && (
+          <div className="options-panel">
+            <label className="options-field">
+              <span>Min Identity (%)</span>
+              <input
+                type="number"
+                className="gx-input"
+                min={0}
+                max={100}
+                value={options.minid}
+                onChange={(e) => setOptions((o) => ({ ...o, minid: Number(e.target.value) }))}
+              />
+            </label>
+            <label className="options-field">
+              <span>Min Coverage (%)</span>
+              <input
+                type="number"
+                className="gx-input"
+                min={0}
+                max={100}
+                value={options.mincov}
+                onChange={(e) => setOptions((o) => ({ ...o, mincov: Number(e.target.value) }))}
+              />
+            </label>
+            <label className="options-field">
+              <span>Min Score</span>
+              <input
+                type="number"
+                className="gx-input"
+                min={0}
+                max={100}
+                value={options.minscore}
+                onChange={(e) => setOptions((o) => ({ ...o, minscore: Number(e.target.value) }))}
+              />
+            </label>
+          </div>
+        )}
       </div>
 
       {running && (

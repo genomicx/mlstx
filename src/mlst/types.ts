@@ -26,11 +26,13 @@ export interface AlignmentHit {
 /** Best hit result for a single locus */
 export interface LocusResult {
   locus: string
-  allele: string // allele number, "novel", or "no_hit"
-  identity: number
-  coverage: number
+  allele: string   // allele number, "~N" (novel), or "-" (no hit)
+  identity: number // 0–1
+  coverage: number // 0–1
   bestHit: AlignmentHit | null
 }
+
+export type MLSTStatus = 'PERFECT' | 'NOVEL' | 'NONE' | 'MISSING' | 'MIXED' | 'BAD' | 'OK'
 
 /** MLST result for a single input file */
 export interface MLSTResult {
@@ -38,6 +40,15 @@ export interface MLSTResult {
   scheme: string
   st: string
   alleles: Record<string, string>
+  status: MLSTStatus
+  score: number  // 0–100
+}
+
+/** User-configurable MLST thresholds */
+export interface MLSTOptions {
+  minid: number    // min DNA identity % (default 95)
+  mincov: number   // min coverage % (default 10)
+  minscore: number // min score to report (default 50)
 }
 
 /** An MLST scheme definition */

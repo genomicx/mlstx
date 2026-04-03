@@ -3,9 +3,10 @@ import type {
   SchemeData,
   MLSTResult,
   AlignmentHit,
+  MLSTOptions,
 } from './types'
 import { parseFastaString } from './parseFasta'
-import { callAllele } from './callAllele'
+import { callAllele, DEFAULT_MINID, DEFAULT_MINCOV } from './callAllele'
 import { callST } from './callST'
 import { loadWasmModule, createModuleInstance } from '@genomicx/ui'
 
@@ -174,6 +175,7 @@ async function analyzeFile(
   allelesFasta: string,
   alleleLengths: Record<string, number>,
   onProgress: ProgressCallback,
+  options: MLSTOptions,
 ): Promise<MLSTResult> {
   const loci = schemeData.scheme.loci
 
@@ -193,7 +195,7 @@ async function analyzeFile(
     )
     const locusPrefix = locus + '_'
     const locusHits = allHits.filter((h) => h.targetName.startsWith(locusPrefix))
-    return callAllele(locus, locusHits, alleleLengths)
+    return callAllele(locus, locusHits, alleleLengths, options.minid, options.mincov)
   })
 
   onProgress(`${fasta.filename}: calling ST`, 100)
@@ -202,6 +204,7 @@ async function analyzeFile(
     schemeData.scheme.name,
     locusResults,
     schemeData.profiles,
+    options.minscore,
   )
 }
 
@@ -213,6 +216,7 @@ export async function runMLST(
   files: ParsedFasta[],
   schemeData: SchemeData,
   onProgress: ProgressCallback,
+  options: MLSTOptions = { minid: DEFAULT_MINID, mincov: DEFAULT_MINCOV, minscore: 50 },
 ): Promise<MLSTResult[]> {
   onProgress('Loading BLAST...', 0)
 
@@ -253,6 +257,7 @@ export async function runMLST(
       allelesFasta,
       alleleLengths,
       fileProgress,
+      options,
     )
     results.push(result)
   }

@@ -17,7 +17,10 @@ export function ResultsTable({ results, loci, onRemove }: ResultsTableProps) {
           <tr>
             {onRemove && <th className="remove-col" />}
             <th>File</th>
+            <th>Scheme</th>
             <th>ST</th>
+            <th>Status</th>
+            <th>Score</th>
             {loci.map((l) => (
               <th key={l}>{l}</th>
             ))}
@@ -39,9 +42,14 @@ export function ResultsTable({ results, loci, onRemove }: ResultsTableProps) {
                 </td>
               )}
               <td className="filename-cell">{r.filename}</td>
+              <td className="scheme-cell">{r.scheme}</td>
               <td className="st-cell" title={statusLabel(r.st)}>
                 <StatusBadge variant={statusVariant(classifyResult(r.st))}>{r.st}</StatusBadge>
               </td>
+              <td className="status-cell">
+                <StatusBadge variant={mlstStatusVariant(r.status)}>{r.status}</StatusBadge>
+              </td>
+              <td className="score-cell">{r.score}</td>
               {loci.map((l) => {
                 const val = r.alleles[l]
                 return (
@@ -58,6 +66,13 @@ export function ResultsTable({ results, loci, onRemove }: ResultsTableProps) {
       </table>
     </div>
   )
+}
+
+function mlstStatusVariant(status: string): 'success' | 'warning' | 'muted' | 'error' {
+  if (status === 'PERFECT') return 'success'
+  if (status === 'NOVEL' || status === 'MIXED') return 'warning'
+  if (status === 'NONE' || status === 'MISSING') return 'error'
+  return 'muted'
 }
 
 function statusVariant(classification: string): 'success' | 'warning' | 'muted' {
@@ -82,10 +97,10 @@ function statusLabel(val: string | undefined): string {
 }
 
 export function exportCSV(results: MLSTResult[], loci: string[]): void {
-  const header = ['File', 'ST', ...loci].join(',')
+  const header = ['File', 'Scheme', 'ST', 'Status', 'Score', ...loci].join(',')
   const rows = results.map((r) => {
     const alleleValues = loci.map((l) => r.alleles[l] ?? '-')
-    return [r.filename, r.st, ...alleleValues].join(',')
+    return [r.filename, r.scheme, r.st, r.status, r.score, ...alleleValues].join(',')
   })
   const csv = [header, ...rows].join('\n')
 
