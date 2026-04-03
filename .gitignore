@@ -22,6 +22,7 @@ pnpm-debug.log*
 *.sw?
 test_data/
 .vercel
+.wrangler/
 .vscode/*
 !.vscode/extensions.json
 yarn-debug.log*
