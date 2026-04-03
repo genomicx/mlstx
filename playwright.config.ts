@@ -2,9 +2,9 @@ import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
   testDir: './tests/e2e',
-  timeout: 180_000, // 3 min — WASM loading + minimap2 alignment takes time
+  timeout: 300_000, // 5 min — BLAST WASM loading + allele DB alignment takes time
   expect: {
-    timeout: 120_000,
+    timeout: 240_000,
   },
   reporter: 'list',
   use: {
