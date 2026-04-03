@@ -332,6 +332,7 @@ function AnalysisPage() {
           files={files}
           onFilesChange={handleFilesChange}
           disabled={running}
+          accept=".fa,.fasta,.fna,.fa.gz,.fasta.gz,.fna.gz"
         />
         <div className="scheme-section">
           <SchemeSelector
