@@ -41,6 +41,7 @@ export function PhyloTree({ newick, alignment }: PhyloTreeProps) {
           source: newick,
           size: { width: rect.width || 800, height: 500 },
           padding: 20,
+          showLabels: true,
           showLeafLabels: true,
           showBranchLengths: false,
         }
