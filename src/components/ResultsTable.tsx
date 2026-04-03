@@ -1,4 +1,4 @@
-import { StatusBadge } from '@genomicx/ui'
+import { StatusBadge, downloadText } from '@genomicx/ui'
 import type { MLSTResult } from '../mlst/types'
 
 interface ResultsTableProps {
@@ -75,11 +75,5 @@ export function exportCSV(results: MLSTResult[], loci: string[]): void {
   })
   const csv = [header, ...rows].join('\n')
 
-  const blob = new Blob([csv], { type: 'text/csv' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'mlst_results.csv'
-  a.click()
-  URL.revokeObjectURL(url)
+  downloadText(csv, 'mlst_results.csv', 'text/csv')
 }

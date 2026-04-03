@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback, useState } from 'react'
+import { downloadText } from '@genomicx/ui'
 
 // phylocanvas.gl is loaded from CDN in index.html
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,24 +74,12 @@ export function PhyloTree({ newick, alignment }: PhyloTreeProps) {
   }, [])
 
   const handleExportNewick = useCallback(() => {
-    const blob = new Blob([newick], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'mlstx_tree.nwk'
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadText(newick, 'mlstx_tree.nwk')
   }, [newick])
 
   const handleExportAlignment = useCallback(() => {
     if (!alignment) return
-    const blob = new Blob([alignment], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'mlstx_alignment.fasta'
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadText(alignment, 'mlstx_alignment.fasta')
   }, [alignment])
 
   return (
