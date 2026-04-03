@@ -1,6 +1,6 @@
 import type { QCResult, QCStatus } from '../mlst/qualibact'
 import type { AssemblyStats } from '../mlst/assemblyStats'
-import { StatusBadge } from '@genomicx/ui'
+import { StatusBadge, downloadText } from '@genomicx/ui'
 
 interface QCPanelProps {
   qcResults: QCResult[]
@@ -15,16 +15,21 @@ export function QCPanel({ qcResults, statsMap, collapsed, onToggle }: QCPanelPro
   return (
     <section className="qc-section">
       <div className="qc-header">
-        {onToggle && (
-          <button
-            className="section-toggle"
-            onClick={onToggle}
-            aria-label={collapsed ? 'Expand QC' : 'Collapse QC'}
-          >
-            <span className={`chevron ${!collapsed ? 'open' : ''}`}>›</span>
-          </button>
-        )}
-        <h2>Assembly QC ({qcResults.length})</h2>
+        <div className="results-header-left">
+          {onToggle && (
+            <button
+              className="section-toggle"
+              onClick={onToggle}
+              aria-label={collapsed ? 'Expand QC' : 'Collapse QC'}
+            >
+              <span className={`chevron ${!collapsed ? 'open' : ''}`}>›</span>
+            </button>
+          )}
+          <h2>Assembly QC ({qcResults.length})</h2>
+        </div>
+        <button className="export-button" onClick={() => exportQC(qcResults, statsMap)}>
+          Export CSV
+        </button>
       </div>
       {!collapsed && (
         <>
@@ -76,6 +81,19 @@ export function QCPanel({ qcResults, statsMap, collapsed, onToggle }: QCPanelPro
       )}
     </section>
   )
+}
+
+function exportQC(qcResults: QCResult[], statsMap: Record<string, AssemblyStats>): void {
+  const header = ['File', 'Species', 'QC', 'N50', 'Contigs', 'Length_bp', 'GC_pct', 'Ns_per_100k'].join(',')
+  const rows = qcResults.map((r) => {
+    const s = statsMap[r.filename]
+    return [
+      r.filename, r.species ?? '', r.overall,
+      s?.n50 ?? '', s?.contigCount ?? '', s?.totalLength ?? '',
+      s ? s.gcPercent.toFixed(2) : '', s ? s.nsPer100k.toFixed(2) : '',
+    ].join(',')
+  })
+  downloadText([header, ...rows].join('\n'), 'mlstx_qc.csv', 'text/csv')
 }
 
 function statusVariant(s: QCStatus): 'success' | 'warning' | 'muted' {

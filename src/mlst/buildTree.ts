@@ -44,7 +44,7 @@ export function getSequenceForAllele(
   alleleFastas: Record<string, string>,
   medianLengths: Record<string, number>,
 ): string {
-  if (!alleleCall || alleleCall === 'no_hit' || alleleCall === 'novel') {
+  if (!alleleCall || alleleCall === '-' || alleleCall.startsWith('~')) {
     return 'N'.repeat(medianLengths[locus] ?? 400)
   }
 

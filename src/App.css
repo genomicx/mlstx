@@ -455,7 +455,7 @@
 .qc-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
   margin-bottom: 0.75rem;
 }
 

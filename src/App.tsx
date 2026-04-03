@@ -379,7 +379,7 @@ function AnalysisPage() {
 
       {logLines.length > 0 && <LogConsole logs={logLines} />}
 
-      {newick && <PhyloTree newick={newick} alignment={alignment} />}
+      {newick && <PhyloTree newick={newick} alignment={alignment} results={results} />}
     </>
   )
 }

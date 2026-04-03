@@ -1,16 +1,44 @@
 import { useRef, useEffect, useCallback, useState } from 'react'
 import { downloadText } from '@genomicx/ui'
+import type { MLSTResult } from '../mlst/types'
 
 // phylocanvas.gl is loaded from CDN in index.html
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const phylocanvas: any
 
+// 10 distinct colours for top STs, then grey for "other"
+const ST_COLOURS = [
+  '#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00',
+  '#a65628', '#f781bf', '#999999', '#66c2a5', '#fc8d62',
+]
+const OTHER_COLOUR = '#cccccc'
+
+function buildStyles(results: MLSTResult[]): Record<string, { fillColour: string }> {
+  const stCounts: Record<string, number> = {}
+  for (const r of results) {
+    stCounts[r.st] = (stCounts[r.st] ?? 0) + 1
+  }
+  const topSTs = Object.entries(stCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([st]) => st)
+  const stColour: Record<string, string> = {}
+  topSTs.forEach((st, i) => { stColour[st] = ST_COLOURS[i] ?? OTHER_COLOUR })
+
+  const styles: Record<string, { fillColour: string }> = {}
+  for (const r of results) {
+    styles[r.filename] = { fillColour: stColour[r.st] ?? OTHER_COLOUR }
+  }
+  return styles
+}
+
 interface PhyloTreeProps {
   newick: string
   alignment?: string
+  results?: MLSTResult[]
 }
 
-export function PhyloTree({ newick, alignment }: PhyloTreeProps) {
+export function PhyloTree({ newick, alignment, results }: PhyloTreeProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const treeRef = useRef<any>(null)
@@ -37,6 +65,7 @@ export function PhyloTree({ newick, alignment }: PhyloTreeProps) {
       console.log('[PhyloTree] Creating tree, container size:', rect.width, 'x', rect.height)
       console.log('[PhyloTree] Newick (first 100 chars):', newick.slice(0, 100))
 
+      const styles = results ? buildStyles(results) : {}
       treeRef.current = new phylocanvas.PhylocanvasGL(
         containerRef.current,
         {
@@ -47,6 +76,7 @@ export function PhyloTree({ newick, alignment }: PhyloTreeProps) {
           showLeafLabels: showLabels,
           alignLabels: alignLabels,
           showBranchLengths: false,
+          styles,
         }
       )
 
