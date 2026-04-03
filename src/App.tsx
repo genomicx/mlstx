@@ -1,21 +1,20 @@
 import { useState, useEffect, useCallback } from 'react'
+import { Routes, Route } from 'react-router-dom'
+import { NavBar, AppFooter, LogConsole } from '@genomicx/ui'
 import { FileUpload } from './components/FileUpload'
 import { SchemeSelector } from './components/SchemeSelector'
 import { ResultsTable, exportCSV } from './components/ResultsTable'
-import { AboutPage } from './components/AboutPage'
+import { PhyloTree } from './components/PhyloTree'
+import { About } from './pages/About'
 import { fetchSchemeList, loadSchemeData } from './mlst/loadScheme'
 import { parseFastaFile } from './mlst/parseFasta'
 import { runMLST } from './mlst/align'
 import { buildTree } from './mlst/buildTree'
-import { PhyloTree } from './components/PhyloTree'
-import { LogConsole } from './components/LogConsole'
 import type { MLSTResult, SchemeData } from './mlst/types'
+import { APP_VERSION } from './lib/version'
 import './App.css'
 
-type Theme = 'light' | 'dark'
-type View = 'mlst' | 'about'
-
-function App() {
+function AnalysisPage() {
   const [schemes, setSchemes] = useState<string[]>([])
   const [schemesLoading, setSchemesLoading] = useState(true)
   const [selectedScheme, setSelectedScheme] = useState('')
@@ -36,17 +35,6 @@ function App() {
   const [treeProgressPct, setTreeProgressPct] = useState(0)
   const [treeError, setTreeError] = useState('')
   const [logLines, setLogLines] = useState<string[]>([])
-
-  const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem('gx-theme') as Theme) || 'dark'
-  })
-
-  const [currentView, setCurrentView] = useState<View>('mlst')
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('gx-theme', theme)
-  }, [theme])
 
   useEffect(() => {
     fetchSchemeList()
@@ -133,157 +121,130 @@ function App() {
   const canRun = files.length > 0 && selectedScheme !== '' && !running
 
   return (
+    <>
+      <div className="controls">
+        <FileUpload
+          files={files}
+          onFilesChange={setFiles}
+          disabled={running}
+        />
+        <SchemeSelector
+          schemes={schemes}
+          selected={selectedScheme}
+          onSelect={setSelectedScheme}
+          disabled={running}
+          loading={schemesLoading}
+        />
+        <button
+          className="run-button"
+          onClick={handleRun}
+          disabled={!canRun}
+        >
+          {running ? 'Running...' : 'Run MLST'}
+        </button>
+      </div>
+
+      {running && (
+        <section className="progress" aria-live="polite">
+          <div
+            className="progress-bar"
+            role="progressbar"
+            aria-valuenow={Math.round(progressPct)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="MLST analysis progress"
+          >
+            <div
+              className="progress-fill"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          <p className="progress-text">{progress}</p>
+        </section>
+      )}
+
+      {error && (
+        <section className="error" role="alert">
+          <p>{error}</p>
+        </section>
+      )}
+
+      {results.length > 0 && (
+        <section className="results">
+          <div className="results-header">
+            <h2>Results</h2>
+            <div className="results-actions">
+              <button
+                className="export-button"
+                onClick={() => exportCSV(results, loci)}
+              >
+                Export CSV
+              </button>
+              {results.length >= 2 && (
+                <button
+                  className="tree-button"
+                  onClick={handleBuildTree}
+                  disabled={treeBuilding}
+                >
+                  {treeBuilding ? 'Building...' : 'Build Tree'}
+                </button>
+              )}
+            </div>
+          </div>
+          <ResultsTable results={results} loci={loci} />
+        </section>
+      )}
+
+      {treeBuilding && (
+        <section className="progress" aria-live="polite">
+          <div
+            className="progress-bar"
+            role="progressbar"
+            aria-valuenow={Math.round(treeProgressPct)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Tree building progress"
+          >
+            <div
+              className="progress-fill"
+              style={{ width: `${treeProgressPct}%` }}
+            />
+          </div>
+          <p className="progress-text">{treeProgress}</p>
+        </section>
+      )}
+
+      {treeError && (
+        <section className="error" role="alert">
+          <p>{treeError}</p>
+        </section>
+      )}
+
+      {logLines.length > 0 && <LogConsole logs={logLines} />}
+
+      {newick && <PhyloTree newick={newick} alignment={alignment} />}
+    </>
+  )
+}
+
+function App() {
+  useEffect(() => {
+    const saved = (localStorage.getItem('gx-theme') as 'light' | 'dark') || 'dark'
+    document.documentElement.setAttribute('data-theme', saved)
+  }, [])
+
+  return (
     <div className="app">
-      <header className="app-header">
-        <div className="header-top">
-          <h1>mlstx</h1>
-          <button
-            className="theme-toggle"
-            onClick={() =>
-              setTheme((t) => (t === 'light' ? 'dark' : 'light'))
-            }
-            aria-label="Toggle theme"
-          >
-            {theme === 'light' ? '\u263E' : '\u2600'}
-          </button>
-        </div>
-        <p className="subtitle">Browser-based MLST Typing</p>
-        <nav className="tab-bar">
-          <button
-            className={`tab ${currentView === 'mlst' ? 'tab-active' : ''}`}
-            onClick={() => setCurrentView('mlst')}
-          >
-            Analysis
-          </button>
-          <button
-            className={`tab ${currentView === 'about' ? 'tab-active' : ''}`}
-            onClick={() => setCurrentView('about')}
-          >
-            About
-          </button>
-        </nav>
-      </header>
+      <NavBar appName="mlstx" appSubtitle="Browser-based MLST Typing" version={APP_VERSION} />
 
       <main className="app-main">
-        {currentView === 'mlst' ? (
-          <>
-            <div className="controls">
-              <FileUpload
-                files={files}
-                onFilesChange={setFiles}
-                disabled={running}
-              />
-              <SchemeSelector
-                schemes={schemes}
-                selected={selectedScheme}
-                onSelect={setSelectedScheme}
-                disabled={running}
-                loading={schemesLoading}
-              />
-              <button
-                className="run-button"
-                onClick={handleRun}
-                disabled={!canRun}
-              >
-                {running ? 'Running...' : 'Run MLST'}
-              </button>
-            </div>
-
-            {running && (
-              <section className="progress" aria-live="polite">
-                <div
-                  className="progress-bar"
-                  role="progressbar"
-                  aria-valuenow={Math.round(progressPct)}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label="MLST analysis progress"
-                >
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${progressPct}%` }}
-                  />
-                </div>
-                <p className="progress-text">{progress}</p>
-              </section>
-            )}
-
-            {error && (
-              <section className="error" role="alert">
-                <p>{error}</p>
-              </section>
-            )}
-
-            {results.length > 0 && (
-              <section className="results">
-                <div className="results-header">
-                  <h2>Results</h2>
-                  <div className="results-actions">
-                    <button
-                      className="export-button"
-                      onClick={() => exportCSV(results, loci)}
-                    >
-                      Export CSV
-                    </button>
-                    {results.length >= 2 && (
-                      <button
-                        className="tree-button"
-                        onClick={handleBuildTree}
-                        disabled={treeBuilding}
-                      >
-                        {treeBuilding ? 'Building...' : 'Build Tree'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <ResultsTable results={results} loci={loci} />
-              </section>
-            )}
-
-            {treeBuilding && (
-              <section className="progress" aria-live="polite">
-                <div
-                  className="progress-bar"
-                  role="progressbar"
-                  aria-valuenow={Math.round(treeProgressPct)}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label="Tree building progress"
-                >
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${treeProgressPct}%` }}
-                  />
-                </div>
-                <p className="progress-text">{treeProgress}</p>
-              </section>
-            )}
-
-            {treeError && (
-              <section className="error" role="alert">
-                <p>{treeError}</p>
-              </section>
-            )}
-
-            {logLines.length > 0 && <LogConsole lines={logLines} />}
-
-            {newick && <PhyloTree newick={newick} alignment={alignment} />}
-          </>
-        ) : (
-          <AboutPage />
-        )}
+        <Routes>
+          <Route path="/" element={<AnalysisPage />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
       </main>
 
-      <footer className="app-footer">
-        <div className="footer-inner">
-          <span>GenomicX &mdash; open-source bioinformatics for the browser</span>
-          <div className="footer-links">
-            <a href="https://github.com/genomicx" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="https://genomicx.vercel.app/about" target="_blank" rel="noopener noreferrer">Mission</a>
-            <a href="https://www.happykhan.com/" target="_blank" rel="noopener noreferrer">Nabil-Fareed Alikhan</a>
-          </div>
-        </div>
-      </footer>
+      <AppFooter appName="mlstx" />
     </div>
   )
 }

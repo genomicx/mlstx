@@ -1,87 +1,17 @@
+/* ── App shell ───────────────────────────────── */
 .app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Main ────────────────────────────────────── */
+.app-main {
+  flex: 1;
   max-width: var(--gx-max-width);
+  width: 100%;
   margin: 0 auto;
   padding: 2rem 2rem 1rem;
-  min-height: 100vh;
-}
-
-/* ── Header ─────────────────────────────────── */
-.app-header {
-  margin-bottom: 2.5rem;
-}
-
-.header-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.app-header h1 {
-  margin: 0;
-  font-size: 2.25rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  background: var(--gx-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.subtitle {
-  margin: 0.3rem 0 0;
-  color: var(--gx-text-muted);
-  font-size: 0.95rem;
-  font-weight: 400;
-}
-
-/* Theme toggle */
-.theme-toggle {
-  background: none;
-  border: 1px solid var(--gx-border);
-  border-radius: var(--gx-radius-pill);
-  padding: 0.45rem 0.7rem;
-  cursor: pointer;
-  font-size: 1.15rem;
-  line-height: 1;
-  transition: all 0.2s;
-  color: var(--gx-text);
-}
-
-.theme-toggle:hover {
-  border-color: var(--gx-accent);
-  transform: scale(1.05);
-}
-
-/* Tab navigation */
-.tab-bar {
-  display: flex;
-  gap: 0;
-  margin-top: 1.25rem;
-  border-bottom: 2px solid var(--gx-border);
-}
-
-.tab {
-  padding: 0.6rem 1.5rem;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--gx-text-muted);
-  transition: color 0.2s, border-color 0.2s;
-}
-
-.tab:hover {
-  color: var(--gx-text);
-}
-
-.tab-active {
-  color: var(--gx-accent);
-  border-bottom-color: var(--gx-accent);
-  font-weight: 600;
 }
 
 /* ── Controls ────────────────────────────────── */
@@ -625,111 +555,4 @@
   overflow: hidden;
 }
 
-/* ── Log console ─────────────────────────────── */
-.log-console {
-  background: var(--gx-bg-alt);
-  border: 1px solid var(--gx-border);
-  border-radius: var(--gx-radius-lg);
-  padding: 1.5rem;
-  margin-top: 1.5rem;
-  box-shadow: var(--gx-shadow);
-}
 
-.log-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-}
-
-.log-header h2 {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--gx-text);
-}
-
-.log-header-right {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.log-count {
-  font-size: 0.8rem;
-  color: var(--gx-text-muted);
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-}
-
-.copy-log-button {
-  padding: 0.3rem 0.7rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: 1px solid var(--gx-border);
-  border-radius: 6px;
-  background: var(--gx-bg-alt);
-  color: var(--gx-text-muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.copy-log-button:hover {
-  background: var(--gx-accent);
-  color: white;
-  border-color: var(--gx-accent);
-}
-
-.log-body {
-  max-height: 200px;
-  overflow-y: auto;
-  background: var(--gx-bg-elevated);
-  border: 1px solid var(--gx-border);
-  border-radius: var(--gx-radius);
-  padding: 0.75rem;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 0.78rem;
-  line-height: 1.6;
-}
-
-.log-line {
-  color: var(--gx-text);
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.log-index {
-  color: var(--gx-text-muted);
-  margin-right: 0.75rem;
-  user-select: none;
-}
-
-/* ── Footer ──────────────────────────────────── */
-.app-footer {
-  margin-top: auto;
-  border-top: 1px solid var(--gx-border);
-  padding: 2rem;
-  font-size: 0.8rem;
-  color: var(--gx-text-muted);
-}
-
-.footer-inner {
-  max-width: var(--gx-max-width);
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.footer-links {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.footer-links a {
-  color: var(--gx-text-muted);
-  font-size: 0.8rem;
-}
-
-.footer-links a:hover {
-  color: var(--gx-accent);
-}

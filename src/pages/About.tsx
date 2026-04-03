@@ -1,4 +1,4 @@
-export function AboutPage() {
+export function About() {
   return (
     <div className="about-page">
       <section>
@@ -10,6 +10,8 @@ export function AboutPage() {
             Aioli/biowasm
           </a>{' '}
           to align alleles against bacterial genomes entirely in your browser.
+          Upload genome assemblies in FASTA format, select an MLST scheme, and
+          get sequence type assignments in seconds.
         </p>
         <div className="privacy-note">
           <svg
@@ -31,6 +33,41 @@ export function AboutPage() {
       </section>
 
       <section>
+        <h2>What is MLST?</h2>
+        <p>
+          Multi-Locus Sequence Typing (MLST) is a molecular typing method that
+          characterises bacterial isolates using allele sequences from several
+          housekeeping genes. Each unique combination of alleles defines a
+          sequence type (ST), enabling strain tracking and epidemiological
+          studies.
+        </p>
+        <p>
+          mlstx uses MLST scheme definitions from{' '}
+          <a href="https://pubmlst.org" target="_blank" rel="noopener noreferrer">
+            PubMLST
+          </a>
+          , covering hundreds of bacterial species. Schemes are fetched and
+          cached in your browser, so subsequent analyses run offline.
+        </p>
+      </section>
+
+      <section>
+        <h2>How it works</h2>
+        <p>
+          mlstx loads the allele sequences for your chosen scheme, then uses
+          minimap2 (via WebAssembly) to align each allele against your genome
+          assemblies. Hits are scored and the best-matching allele number is
+          assigned per locus. When all loci are assigned, the combination is
+          looked up in the scheme profile to determine the sequence type.
+        </p>
+        <p>
+          For two or more samples, you can also build a neighbour-joining
+          phylogenetic tree from the concatenated allele alignment using FastTree
+          compiled to WebAssembly.
+        </p>
+      </section>
+
+      <section>
         <h2>About the Author</h2>
         <h3>Nabil-Fareed Alikhan</h3>
         <p className="about-role">
@@ -38,7 +75,9 @@ export function AboutPage() {
           University of Oxford
         </p>
         <p>
-          Bioinformatics researcher and software developer specialising in microbial genomics. I build widely used open-source tools, publish peer-reviewed research, and co-host the MicroBinfie podcast. My work is recognised across the bacterial genomics community for its focus on practical, open science.
+          Bioinformatics researcher and software developer specialising in
+          microbial genomics. Builder of widely used open-source tools,
+          peer-reviewed researcher, and co-host of the MicroBinfie podcast.
         </p>
         <div className="about-links">
           <a
