@@ -77,3 +77,14 @@ export function exportCSV(results: MLSTResult[], loci: string[]): void {
 
   downloadText(csv, 'mlst_results.csv', 'text/csv')
 }
+
+/** Export results as tseemann/mlst-compatible JSON (--full format). */
+export function exportJSON(results: MLSTResult[]): void {
+  const data = results.map((r) => ({
+    id: r.filename,
+    scheme: r.scheme,
+    sequence_type: r.st,
+    alleles: r.alleles,
+  }))
+  downloadText(JSON.stringify(data, null, 2), 'mlst_results.json', 'application/json')
+}

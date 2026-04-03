@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { NavBar, AppFooter, LogConsole, FileUpload, ProgressBar } from '@genomicx/ui'
 import { SchemeSelector } from './components/SchemeSelector'
-import { ResultsTable, exportCSV } from './components/ResultsTable'
+import { ResultsTable, exportCSV, exportJSON } from './components/ResultsTable'
 import { PhyloTree } from './components/PhyloTree'
 import { About } from './pages/About'
 import { fetchSchemeList, loadSchemeData } from './mlst/loadScheme'
@@ -274,6 +274,12 @@ function AnalysisPage() {
                 onClick={() => exportCSV(results, loci)}
               >
                 Export CSV
+              </button>
+              <button
+                className="export-button"
+                onClick={() => exportJSON(results)}
+              >
+                Export JSON
               </button>
               {results.length >= 2 && (
                 <button

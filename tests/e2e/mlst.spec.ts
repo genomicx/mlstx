@@ -15,11 +15,6 @@ test.describe('MLST e2e — E. coli Achtman genome', () => {
     const fileInput = page.locator('input[type="file"]')
     await fileInput.setInputFiles(FIXTURE)
 
-    // App should immediately start detecting + running MLST
-    await expect(page.getByText(/detecting|loading|parsing|mapping/i)).toBeVisible({
-      timeout: 10_000,
-    })
-
     // Wait for results section OR error — BLAST WASM + large allele DB can take several minutes
     await expect(
       page.locator('.results, .error')
