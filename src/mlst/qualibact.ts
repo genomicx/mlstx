@@ -10,8 +10,7 @@
 
 import type { AssemblyStats } from './assemblyStats'
 
-const QUALIBACT_BASE =
-  'https://raw.githubusercontent.com/happykhan/qualibact/main/docs'
+const QUALIBACT_BASE = 'https://happykhan.github.io/qualibact'
 
 export type QCStatus = 'pass' | 'warn' | 'fail' | 'unknown'
 
@@ -67,10 +66,17 @@ const METRIC_MAP: Record<string, { key: keyof AssemblyStats; label: string }> = 
   GC_Content:    { key: 'gcPercent',   label: 'GC (%)' },
 }
 
-/** Cache per species to avoid re-fetching */
-const cache = new Map<string, QCCheck[] | null>()
+/** Parsed threshold row (species-level, reusable across samples) */
+interface ThresholdRow {
+  field: string
+  lower: number | null
+  upper: number | null
+}
 
-/** Convert "Genus species" → URL path "Genus/Genus_species/Genus_species_metrics.csv" */
+/** Cache raw thresholds per species (null = fetch failed) */
+const thresholdCache = new Map<string, ThresholdRow[] | null>()
+
+/** Convert "Genus species" → URL "Genus/Genus_species/Genus_species_metrics.csv" */
 function metricsUrl(species: string): string {
   const parts = species.trim().split(/\s+/)
   const genus = parts[0]
@@ -79,10 +85,7 @@ function metricsUrl(species: string): string {
   return `${QUALIBACT_BASE}/${genus}/${slug}/${slug}_metrics.csv`
 }
 
-async function fetchChecks(
-  stats: AssemblyStats,
-  species: string,
-): Promise<QCCheck[]> {
+async function fetchThresholds(species: string): Promise<ThresholdRow[]> {
   const url = metricsUrl(species)
   const res = await fetch(url)
   if (!res.ok) return []
@@ -91,46 +94,56 @@ async function fetchChecks(
   const lines = text.trim().split('\n')
   if (lines.length < 2) return []
 
-  // Format: species,metric,lower_bounds,upper_bounds
   const header = lines[0].split(',')
   const metricIdx = header.indexOf('metric')
   const lowerIdx = header.indexOf('lower_bounds')
   const upperIdx = header.indexOf('upper_bounds')
   if (metricIdx < 0 || lowerIdx < 0 || upperIdx < 0) return []
 
-  const checks: QCCheck[] = []
-
+  const rows: ThresholdRow[] = []
   for (let i = 1; i < lines.length; i++) {
     const cols = lines[i].split(',')
     const metric = cols[metricIdx]?.trim()
     const mapping = METRIC_MAP[metric]
     if (!mapping) continue
-
     const rawLower = cols[lowerIdx]?.trim()
     const rawUpper = cols[upperIdx]?.trim()
-    const value = stats[mapping.key] as number
+    rows.push({
+      field: mapping.label,
+      lower: rawLower && !isNaN(Number(rawLower)) ? Number(rawLower) : null,
+      upper: rawUpper && !isNaN(Number(rawUpper)) ? Number(rawUpper) : null,
+    })
+  }
+  return rows
+}
 
-    if (rawLower && !isNaN(Number(rawLower))) {
-      const lower = Number(rawLower)
+function applyThresholds(stats: AssemblyStats, rows: ThresholdRow[]): QCCheck[] {
+  const checks: QCCheck[] = []
+  // Build a reverse map: label → AssemblyStats key
+  const labelToKey = Object.fromEntries(
+    Object.values(METRIC_MAP).map(({ key, label }) => [label, key])
+  )
+  for (const row of rows) {
+    const statKey = labelToKey[row.field] as keyof AssemblyStats | undefined
+    if (!statKey) continue
+    const value = stats[statKey] as number
+    if (row.lower !== null) {
       checks.push({
-        field: mapping.label,
+        field: row.field,
         value,
-        threshold: `>= ${lower.toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
-        status: value >= lower ? 'pass' : 'fail',
+        threshold: `>= ${row.lower.toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
+        status: value >= row.lower ? 'pass' : 'fail',
       })
     }
-
-    if (rawUpper && !isNaN(Number(rawUpper))) {
-      const upper = Number(rawUpper)
+    if (row.upper !== null) {
       checks.push({
-        field: mapping.label,
+        field: row.field,
         value,
-        threshold: `<= ${upper.toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
-        status: value <= upper ? 'pass' : 'fail',
+        threshold: `<= ${row.upper.toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
+        status: value <= row.upper ? 'pass' : 'fail',
       })
     }
   }
-
   return checks
 }
 
@@ -144,24 +157,24 @@ export async function runQC(
     return { filename: stats.filename, species: null, overall: 'unknown', checks: [] }
   }
 
-  let checks: QCCheck[]
-  if (cache.has(species)) {
-    const template = cache.get(species)
-    if (!template) {
+  let rows: ThresholdRow[]
+  if (thresholdCache.has(species)) {
+    const cached = thresholdCache.get(species)
+    if (!cached) {
       return { filename: stats.filename, species, overall: 'unknown', checks: [] }
     }
-    // Re-evaluate thresholds against this sample's stats
-    checks = await fetchChecks(stats, species)
+    rows = cached
   } else {
     try {
-      checks = await fetchChecks(stats, species)
-      cache.set(species, checks)
+      rows = await fetchThresholds(species)
+      thresholdCache.set(species, rows)
     } catch {
-      cache.set(species, null)
+      thresholdCache.set(species, null)
       return { filename: stats.filename, species, overall: 'unknown', checks: [] }
     }
   }
 
+  const checks = applyThresholds(stats, rows)
   const overall: QCStatus =
     checks.length === 0
       ? 'unknown'
