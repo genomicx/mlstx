@@ -49,25 +49,22 @@ describe('ResultsTable', () => {
     expect(screen.getByText('incomplete')).toBeInTheDocument()
   })
 
-  it('applies correct CSS class for exact match', () => {
+  it('uses success variant for exact match', () => {
     render(<ResultsTable results={[results[0]]} loci={loci} />)
     const badge = screen.getByText('152')
-    const td = badge.closest('td')!
-    expect(td.className).toContain('st-exact')
+    expect(badge.className).toContain('gx-badge--success')
   })
 
-  it('applies correct CSS class for novel', () => {
+  it('uses warning variant for novel', () => {
     render(<ResultsTable results={[results[1]]} loci={loci} />)
     const novelCells = screen.getAllByText('novel')
-    const td = novelCells[0].closest('td')!
-    expect(td.className).toContain('st-novel')
+    expect(novelCells[0].className).toContain('gx-badge--warning')
   })
 
-  it('applies correct CSS class for incomplete/no_hit', () => {
+  it('uses muted variant for incomplete/no_hit', () => {
     render(<ResultsTable results={[results[2]]} loci={loci} />)
     const badge = screen.getByText('incomplete')
-    const td = badge.closest('td')!
-    expect(td.className).toContain('st-nohit')
+    expect(badge.className).toContain('gx-badge--muted')
   })
 
   it('adds title attributes for accessibility', () => {

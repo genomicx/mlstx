@@ -1,3 +1,4 @@
+import { StatusBadge } from '@genomicx/ui'
 import type { MLSTResult } from '../mlst/types'
 
 interface ResultsTableProps {
@@ -24,21 +25,16 @@ export function ResultsTable({ results, loci }: ResultsTableProps) {
           {results.map((r) => (
             <tr key={r.filename}>
               <td className="filename-cell">{r.filename}</td>
-              <td
-                className={`st-cell st-${classifyResult(r.st)}`}
-                title={statusLabel(r.st)}
-              >
-                <span className="badge">{r.st}</span>
+              <td className="st-cell" title={statusLabel(r.st)}>
+                <StatusBadge variant={statusVariant(classifyResult(r.st))}>{r.st}</StatusBadge>
               </td>
               {loci.map((l) => {
                 const val = r.alleles[l]
                 return (
-                  <td
-                    key={l}
-                    className={`allele-cell allele-${classifyResult(val)}`}
-                    title={statusLabel(val)}
-                  >
-                    {val ? <span className="badge">{val}</span> : '-'}
+                  <td key={l} className="allele-cell" title={statusLabel(val)}>
+                    {val
+                      ? <StatusBadge variant={statusVariant(classifyResult(val))}>{val}</StatusBadge>
+                      : '-'}
                   </td>
                 )
               })}
@@ -48,6 +44,12 @@ export function ResultsTable({ results, loci }: ResultsTableProps) {
       </table>
     </div>
   )
+}
+
+function statusVariant(classification: string): 'success' | 'warning' | 'muted' {
+  if (classification === 'exact') return 'success'
+  if (classification === 'novel') return 'warning'
+  return 'muted'
 }
 
 function classifyResult(val: string | undefined): string {
