@@ -21,6 +21,7 @@ export interface AlignmentHit {
   targetStart: number
   targetEnd: number
   targetLength: number
+  strand?: '+' | '-'
 }
 
 /** Best hit result for a single locus */
@@ -42,6 +43,7 @@ export interface MLSTResult {
   alleles: Record<string, string>
   status: MLSTStatus
   score: number  // 0–100
+  locusResults: LocusResult[]
 }
 
 /** User-configurable MLST thresholds */

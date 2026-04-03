@@ -114,6 +114,7 @@ export function parseBlast(blastText: string): AlignmentHit[] {
       queryStart: Math.min(sstart, send) - 1,
       queryEnd: Math.max(sstart, send),
       targetLength: 0,              // looked up from alleleLengths map
+      strand: sstart <= send ? '+' : '-',
     })
   }
 

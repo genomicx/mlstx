@@ -17,6 +17,9 @@ import type { MLSTResult, SchemeData, MLSTOptions } from './mlst/types'
 import { DEFAULT_MINID, DEFAULT_MINCOV } from './mlst/callAllele'
 import type { AssemblyStats } from './mlst/assemblyStats'
 import type { QCResult } from './mlst/qualibact'
+import { buildNovelFasta, hasNovelAlleles } from './mlst/novelAlleles'
+import { downloadText } from '@genomicx/ui'
+import type { ParsedFasta } from './mlst/types'
 import { APP_VERSION } from './lib/version'
 import './App.css'
 
@@ -44,6 +47,8 @@ function AnalysisPage() {
   const [treeProgressPct, setTreeProgressPct] = useState(0)
   const [treeError, setTreeError] = useState('')
   const [logLines, setLogLines] = useState<string[]>([])
+
+  const [parsedFastas, setParsedFastas] = useState<Record<string, ParsedFasta>>({})
 
   // MLST options
   const [options, setOptions] = useState<MLSTOptions>({ minid: DEFAULT_MINID, mincov: DEFAULT_MINCOV, minscore: 50 })
@@ -103,6 +108,10 @@ function AnalysisPage() {
         return [...next, ...mlstResults]
       })
 
+      // Store parsed FASTAs for novel allele extraction
+      const parsedMap = Object.fromEntries(parsedFiles.map((pf) => [pf.filename, pf]))
+      setParsedFastas((prev) => ({ ...prev, ...parsedMap }))
+
       // Compute assembly stats + QC
       const newStatsMap: Record<string, AssemblyStats> = {}
       for (const pf of parsedFiles) {
@@ -137,6 +146,7 @@ function AnalysisPage() {
     const batchResults: MLSTResult[] = []
     const newStatsMap: Record<string, AssemblyStats> = {}
     const batchQc: QCResult[] = []
+    const batchFastas: Record<string, ParsedFasta> = {}
 
     try {
       for (let i = 0; i < uploadedFiles.length; i++) {
@@ -183,6 +193,7 @@ function AnalysisPage() {
         }, options)
 
         batchResults.push(...fileResults)
+        batchFastas[parsed.filename] = parsed
 
         // Compute assembly stats + QC for this file
         const stats = computeStats(parsed)
@@ -197,6 +208,7 @@ function AnalysisPage() {
             const next = prev.filter((r) => !batchResults.some((nr) => nr.filename === r.filename))
             return [...next, ...batchResults]
           })
+          setParsedFastas((prev) => ({ ...prev, ...batchFastas }))
           setStatsMap((prev) => ({ ...prev, ...newStatsMap }))
           setQcResults((prev) => {
             const next = prev.filter((q) => !batchQc.some((nq) => nq.filename === q.filename))
@@ -275,6 +287,7 @@ function AnalysisPage() {
     setResults([])
     setQcResults([])
     setStatsMap({})
+    setParsedFastas({})
     setLoci([])
     setNewick('')
     setAlignment('')
@@ -287,11 +300,8 @@ function AnalysisPage() {
   const handleRemoveResult = useCallback((filename: string) => {
     setResults((prev) => prev.filter((r) => r.filename !== filename))
     setQcResults((prev) => prev.filter((r) => r.filename !== filename))
-    setStatsMap((prev) => {
-      const next = { ...prev }
-      delete next[filename]
-      return next
-    })
+    setStatsMap((prev) => { const n = { ...prev }; delete n[filename]; return n })
+    setParsedFastas((prev) => { const n = { ...prev }; delete n[filename]; return n })
     // Clear tree since the sample set changed
     setNewick('')
     setAlignment('')
@@ -439,6 +449,15 @@ function AnalysisPage() {
               <button className="export-button" onClick={() => exportJSON(results)}>
                 Export JSON
               </button>
+              {hasNovelAlleles(results) && (
+                <button
+                  className="export-button"
+                  onClick={() => downloadText(buildNovelFasta(results, parsedFastas), 'novel_alleles.fa', 'text/plain')}
+                  title="Download novel allele sequences as FASTA"
+                >
+                  Novel Alleles FASTA
+                </button>
+              )}
               <button className="clear-button" onClick={handleClearResults} title="Clear all results">
                 Clear
               </button>

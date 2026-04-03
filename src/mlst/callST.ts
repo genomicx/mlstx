@@ -53,7 +53,7 @@ export function callST(
     }
   }
 
-  return { filename, scheme, st, alleles, status, score }
+  return { filename, scheme, st, alleles, status, score, locusResults }
 }
 
 function lookupST(
