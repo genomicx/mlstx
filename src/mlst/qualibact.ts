@@ -133,13 +133,23 @@ export async function runQC(
   }
 
   // Filter to Quast rules only, applicable to this species + assembly_type=all or short
-  const applicable = criteria.filter(
+  const allCriteria = criteria.filter(
     (c) =>
       c.software === 'Quast' &&
       (c.species === 'all' || c.species === species) &&
       (c.assembly_type === 'all' || c.assembly_type === 'short') &&
       !c.field.startsWith('speciesName') &&
       FIELD_MAP[c.field],
+  )
+
+  // For fields that have species-specific criteria, drop the generic 'all' fallback —
+  // otherwise the generic thresholds (designed for small genomes) conflict with
+  // species-specific ones (e.g. generic Total length < 1.2Mb would fail E. coli)
+  const speciesFields = new Set(
+    allCriteria.filter((c) => c.species === species).map((c) => c.field)
+  )
+  const applicable = allCriteria.filter(
+    (c) => c.species === species || !speciesFields.has(c.field)
   )
 
   const checks: QCCheck[] = []
