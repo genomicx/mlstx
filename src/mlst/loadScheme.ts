@@ -1,20 +1,27 @@
 import type { SchemeData, MLSTScheme, STProfile } from './types'
 
+const CDN_BASE = 'https://static.genomicx.org/db/mlstx'
+
 /**
  * Fetch the list of available MLST schemes.
  */
 export async function fetchSchemeList(): Promise<string[]> {
-  const res = await fetch('/db/schemes.json')
+  const res = await fetch(`${CDN_BASE}/schemes.json`)
   if (!res.ok) throw new Error('Failed to load scheme list')
   return res.json()
 }
 
+// Cache scheme data to avoid re-downloading when multiple files share a scheme
+const schemeCache = new Map<string, SchemeData>()
+
 /**
  * Load full scheme data for a given scheme name.
- * Downloads scheme.json, profiles.json, and all locus FASTA files.
+ * Downloads scheme.json, profiles.json, and all locus FASTA files from CDN.
  */
 export async function loadSchemeData(schemeName: string): Promise<SchemeData> {
-  const base = `/db/${schemeName}`
+  if (schemeCache.has(schemeName)) return schemeCache.get(schemeName)!
+
+  const base = `${CDN_BASE}/${schemeName}`
 
   const [schemeRes, profilesRes] = await Promise.all([
     fetch(`${base}/scheme.json`),
@@ -40,5 +47,7 @@ export async function loadSchemeData(schemeName: string): Promise<SchemeData> {
 
   await Promise.all(fastaPromises)
 
-  return { scheme, profiles, alleleFastas }
+  const data = { scheme, profiles, alleleFastas }
+  schemeCache.set(schemeName, data)
+  return data
 }

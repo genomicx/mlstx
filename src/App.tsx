@@ -85,6 +85,78 @@ function AnalysisPage() {
     }
   }, [])
 
+  /** Run MLST per-file with independent scheme detection (tseemann/mlst style). */
+  const runPerFile = useCallback(async (uploadedFiles: File[]) => {
+    setRunning(true)
+    setError('')
+    setResults([])
+    setNewick('')
+    setAlignment('')
+    setTreeError('')
+    setLogLines([])
+    setSchemeData(null)
+    setLoci([])
+
+    const allResults: MLSTResult[] = []
+    let combinedLoci: string[] = []
+
+    try {
+      for (let i = 0; i < uploadedFiles.length; i++) {
+        const file = uploadedFiles[i]
+        const filePrefix = `[${i + 1}/${uploadedFiles.length}] ${file.name}`
+
+        setProgress(`${filePrefix}: detecting scheme...`)
+        setProgressPct((i / uploadedFiles.length) * 100)
+
+        const text = await file.text()
+        const detected = await detectScheme(text, (msg) =>
+          setProgress(`${filePrefix}: ${msg}`),
+        )
+
+        if (detected.length === 0) {
+          setError(`${file.name}: Could not detect MLST scheme — no matches found. Select a scheme manually.`)
+          setRunning(false)
+          return
+        }
+
+        const scheme = detected[0].scheme
+        if (i === 0) {
+          setDetectedScheme(scheme)
+          setSelectedScheme(scheme)
+        }
+
+        setProgress(`${filePrefix}: loading scheme ${scheme}...`)
+        const data = await loadSchemeData(scheme)
+
+        // Accumulate loci (may differ between files/schemes)
+        for (const locus of data.scheme.loci) {
+          if (!combinedLoci.includes(locus)) combinedLoci.push(locus)
+        }
+
+        const parsed = await parseFastaFile(file)
+        const fileResults = await runMLST([parsed], data, (msg, pct) => {
+          const overallPct = ((i + pct / 100) / uploadedFiles.length) * 100
+          setProgress(msg)
+          setProgressPct(overallPct)
+        })
+
+        allResults.push(...fileResults)
+        setResults([...allResults])
+
+        // Keep the last scheme's data for tree building
+        setSchemeData(data)
+        setLoci(combinedLoci)
+      }
+
+      setProgress('')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setRunning(false)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const handleFilesChange = useCallback(async (newFiles: File[]) => {
     setFiles(newFiles)
     if (newFiles.length === 0) return
@@ -100,39 +172,14 @@ function AnalysisPage() {
 
     const override = manualSchemeRef.current
     if (override) {
-      // User pre-selected a scheme — use it directly
+      // User pre-selected a scheme — apply to all files
       await runWithScheme(newFiles, override)
       return
     }
 
-    // Auto-detect scheme then run
-    setRunning(true)
-    setProgress('Detecting scheme...')
-    setProgressPct(0)
-
-    try {
-      const text = await newFiles[0].text()
-      const detected = await detectScheme(text, (msg) => setProgress(msg))
-
-      if (detected.length === 0) {
-        setError('Could not detect MLST scheme — no matches found. Select a scheme manually and click Run.')
-        setRunning(false)
-        return
-      }
-
-      // Use top hit if it's in our scheme list (schemes may not be loaded yet — wait briefly)
-      const topScheme = detected[0].scheme
-      setDetectedScheme(topScheme)
-      setSelectedScheme(topScheme)
-      setRunning(false)
-
-      // Now run MLST with detected scheme
-      await runWithScheme(newFiles, topScheme)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
-      setRunning(false)
-    }
-  }, [runWithScheme])
+    // Auto-detect per file (tseemann/mlst style: each genome gets its own scheme)
+    await runPerFile(newFiles)
+  }, [runWithScheme, runPerFile])
 
   const handleSchemeChange = useCallback((scheme: string) => {
     setSelectedScheme(scheme)
@@ -199,7 +246,7 @@ function AnalysisPage() {
               className="run-button"
               onClick={handleRun}
             >
-              Run MLST
+              {results.length > 0 ? 'Rerun MLST' : 'Run MLST'}
             </button>
           )}
         </div>

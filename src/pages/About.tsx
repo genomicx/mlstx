@@ -59,28 +59,32 @@ export function About() {
       <section>
         <h2>How it works</h2>
         <p>
-          When you drop in a FASTA file, MLSTX maps your assembly against a compact detection
-          database (5 alleles per locus, 162 schemes) using minimap2 compiled to WebAssembly.
-          The scheme with the most loci hit is selected automatically.
+          <strong>Scheme detection:</strong> When you drop in a FASTA file, MLSTX maps your
+          assembly against a compact detection database (5 alleles per locus, all 162 PubMLST
+          schemes) using minimap2 via WebAssembly. Each file is detected independently — so a
+          mixed upload of <em>E. coli</em> and <em>S. aureus</em> assemblies is handled correctly.
         </p>
         <p>
-          The full allele database for the detected scheme is then loaded and each allele is
-          aligned against your assembly. The best-matching allele number is assigned per locus,
-          and the combination is looked up in the scheme profile to determine the sequence type.
-          Exact, novel (~), partial (?), and missing (−) calls follow the same conventions as
-          tseemann/mlst.
+          <strong>Allele calling:</strong> The full allele FASTA for the detected scheme is
+          fetched from the CDN and BLAST (blastall + formatdb) is used to align each allele
+          against the assembly. The best-matching allele number per locus is assigned and looked
+          up in the ST profile table. Exact, novel (~), partial (?), and missing (−) calls follow
+          the same conventions as tseemann/mlst.
         </p>
         <p>
-          For two or more samples a neighbour-joining tree is built from the concatenated allele
-          alignment using FastTree compiled to WebAssembly.
+          <strong>Phylogenetic tree:</strong> For two or more samples, each locus alignment is
+          computed with MUSCLE, the per-locus alignments are concatenated into a super-alignment,
+          and FastTree infers a maximum-likelihood tree — all via WebAssembly in your browser.
         </p>
       </section>
 
       <section>
         <h2>Technology</h2>
         <ul>
-          <li><strong>minimap2</strong> — sequence alignment (via Aioli/biowasm WebAssembly)</li>
-          <li><strong>FastTree</strong> — phylogenetic tree inference (WebAssembly)</li>
+          <li><strong>BLAST (blastall + formatdb)</strong> — allele alignment, same parameters as tseemann/mlst (via WebAssembly)</li>
+          <li><strong>minimap2</strong> — scheme auto-detection: mapping against a compact 162-scheme database (via Aioli/biowasm)</li>
+          <li><strong>MUSCLE</strong> — per-locus multiple sequence alignment for phylogenetic tree input (WebAssembly)</li>
+          <li><strong>FastTree</strong> — maximum-likelihood phylogenetic tree inference from concatenated allele alignment (WebAssembly)</li>
           <li><strong>PubMLST / tseemann/mlst</strong> — scheme and allele database source</li>
           <li><strong>React + Vite</strong> — frontend framework</li>
           <li><strong>Cloudflare Pages</strong> — global CDN hosting</li>
@@ -90,10 +94,11 @@ export function About() {
       <section>
         <h2>Citation</h2>
         <p>
-          MLSTX is a browser-based reimplementation of{' '}
+          MLSTX produces output compatible with{' '}
           <a href="https://github.com/tseemann/mlst" target="_blank" rel="noopener noreferrer">
             tseemann/mlst
-          </a>. If you use MLSTX in your research, please cite:
+          </a>{' '}
+          and extends it with phylogenetics and multi-organism batch support. If you use MLSTX in your research, please cite:
         </p>
         <blockquote style={{ borderLeft: '4px solid var(--gx-accent)', paddingLeft: '1rem', color: 'var(--gx-text-muted)', fontStyle: 'italic', margin: '0.75rem 0' }}>
           Seemann T. mlst. GitHub. https://github.com/tseemann/mlst
