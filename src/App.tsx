@@ -257,7 +257,7 @@ function App() {
         </Routes>
       </main>
 
-      <AppFooter appName="MLSTX" bugReportUrl="https://github.com/genomicx/mlstx/issues" />
+      <AppFooter appName="MLSTX" bugReportEmail="nabil@happykhan.com" bugReportUrl="https://github.com/genomicx/mlstx/issues" />
     </div>
   )
 }
