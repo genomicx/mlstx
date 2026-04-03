@@ -52,8 +52,7 @@ export function PhyloTree({ newick, alignment, results }: PhyloTreeProps) {
     try {
       if (typeof phylocanvas === 'undefined' || !phylocanvas.PhylocanvasGL) {
         setError('phylocanvas.gl not loaded. Check CDN script in index.html.')
-        console.error('[PhyloTree] phylocanvas global not found')
-        return
+          return
       }
 
       if (treeRef.current) {
@@ -62,9 +61,6 @@ export function PhyloTree({ newick, alignment, results }: PhyloTreeProps) {
       }
 
       const rect = containerRef.current.getBoundingClientRect()
-      console.log('[PhyloTree] Creating tree, container size:', rect.width, 'x', rect.height)
-      console.log('[PhyloTree] Newick (first 100 chars):', newick.slice(0, 100))
-
       const styles = results ? buildStyles(results) : {}
       treeRef.current = new phylocanvas.PhylocanvasGL(
         containerRef.current,
@@ -80,11 +76,9 @@ export function PhyloTree({ newick, alignment, results }: PhyloTreeProps) {
         }
       )
 
-      console.log('[PhyloTree] Tree created successfully')
       setError(null)
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
-      console.error('[PhyloTree] Error creating tree:', err)
       setError(msg)
     }
 
@@ -94,7 +88,7 @@ export function PhyloTree({ newick, alignment, results }: PhyloTreeProps) {
         treeRef.current = null
       }
     }
-  }, [newick, showLabels, alignLabels])
+  }, [newick, showLabels, alignLabels, results])
 
   useEffect(() => {
     const handleResize = () => {

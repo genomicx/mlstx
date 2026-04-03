@@ -102,8 +102,8 @@ export async function detectScheme(
     const [scheme, locus] = targetName.split('~~~')
     if (!scheme || !locus) continue
 
-    const nmatch = parseInt(parts[9])
-    const alen = parseInt(parts[10])
+    const nmatch = parseInt(parts[9], 10)
+    const alen = parseInt(parts[10], 10)
     if (alen === 0 || nmatch / alen < 0.8) continue // require 80% identity
 
     if (!schemeCounts.has(scheme)) {

@@ -33,7 +33,7 @@ export interface LocusResult {
   bestHit: AlignmentHit | null
 }
 
-export type MLSTStatus = 'PERFECT' | 'NOVEL' | 'NONE' | 'MISSING' | 'MIXED' | 'BAD' | 'OK'
+export type MLSTStatus = 'PERFECT' | 'NOVEL' | 'NONE' | 'MISSING' | 'MIXED'
 
 /** MLST result for a single input file */
 export interface MLSTResult {

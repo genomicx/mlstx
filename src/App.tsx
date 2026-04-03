@@ -218,7 +218,6 @@ function AnalysisPage() {
 
         // Keep the last scheme's data for tree building
         setSchemeData(data)
-        setLoci(combinedLoci)
       }
 
       setProgress('')
