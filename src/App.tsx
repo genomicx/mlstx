@@ -235,7 +235,20 @@ function App() {
 
   return (
     <div className="app">
-      <NavBar appName="mlstx" appSubtitle="Browser-based MLST Typing" version={APP_VERSION} />
+      <NavBar
+        appName="MLSTX"
+        appSubtitle="Browser-based MLST Typing"
+        version={APP_VERSION}
+        icon={
+          <svg className="gx-nav-logo-icon" viewBox="0 0 24 24" fill="none" stroke="var(--gx-accent)" strokeWidth="2">
+            {/* Grid/table icon representing allele profiles */}
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+          </svg>
+        }
+      />
 
       <main className="app-main">
         <Routes>
@@ -244,7 +257,7 @@ function App() {
         </Routes>
       </main>
 
-      <AppFooter appName="mlstx" />
+      <AppFooter appName="MLSTX" bugReportUrl="https://github.com/genomicx/mlstx/issues" />
     </div>
   )
 }
