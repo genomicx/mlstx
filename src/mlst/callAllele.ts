@@ -1,7 +1,8 @@
 import type { AlignmentHit, LocusResult } from './types'
 
-const IDENTITY_THRESHOLD = 0.90
-const COVERAGE_THRESHOLD = 0.90
+// Match tseemann/mlst defaults: --minid 95, --mincov 10
+const IDENTITY_THRESHOLD = 0.95
+const COVERAGE_THRESHOLD = 0.10
 
 /**
  * Given all alignment hits for a locus (across all alleles and all contigs),

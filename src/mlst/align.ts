@@ -7,16 +7,12 @@ import type {
 import { parseFastaString } from './parseFasta'
 import { callAllele } from './callAllele'
 import { callST } from './callST'
-
-// Aioli is loaded globally via CDN script tag in index.html
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare const Aioli: any
+import { loadWasmModule, createModuleInstance } from '@genomicx/ui'
 
 type ProgressCallback = (message: string, pct: number) => void
 
 /**
- * Merge all contigs into a single sequence (joined with 100 N's as spacers,
- * same approach as BRIG) and return as a single-entry FASTA string.
+ * Merge all contigs into a single sequence (joined with 100 N's as spacers).
  */
 function mergeContigsToFasta(
   filename: string,
@@ -28,14 +24,14 @@ function mergeContigsToFasta(
 
 /**
  * Parse minimap2 PAF output into AlignmentHit format.
+ * Kept for backward compatibility with existing tests.
  *
  * PAF columns (0-indexed):
- *   0: qName   1: qLen   2: qStart   3: qEnd   4: strand
- *   5: tName   6: tLen   7: tStart   8: tEnd
+ *   0: qName  1: qLen  2: qStart  3: qEnd  4: strand
+ *   5: tName  6: tLen  7: tStart  8: tEnd
  *   9: nMatch  10: blockLen  11: mapQ
  *
- * In our usage: query = alleles, target = genome.
- * AlignmentHit.targetName = allele name (to match callAllele expectations).
+ * Query = alleles, Target = genome (our convention).
  */
 export function parsePAF(pafText: string): AlignmentHit[] {
   const hits: AlignmentHit[] = []
@@ -46,12 +42,11 @@ export function parsePAF(pafText: string): AlignmentHit[] {
     const fields = line.split('\t')
     if (fields.length < 12) continue
 
-    const qName = fields[0] // allele name (e.g., "adk_1")
+    const qName = fields[0]
     const qLen = parseInt(fields[1], 10)
     const qStart = parseInt(fields[2], 10)
     const qEnd = parseInt(fields[3], 10)
-    // fields[4] = strand
-    const tName = fields[5] // genome/contig name
+    const tName = fields[5]
     const tStart = parseInt(fields[7], 10)
     const tEnd = parseInt(fields[8], 10)
     const nMatch = parseInt(fields[9], 10)
@@ -59,19 +54,18 @@ export function parsePAF(pafText: string): AlignmentHit[] {
 
     if (isNaN(nMatch) || isNaN(blockLen) || blockLen === 0) continue
 
-    // Identity as percentage (0–100) to match LASTZ format
     const identity = (nMatch / blockLen) * 100
 
     hits.push({
-      targetName: qName, // allele name (callAllele looks this up)
-      queryName: tName, // genome name
+      targetName: qName,
+      queryName: tName,
       identity,
-      alignmentLength: qEnd - qStart, // aligned span on allele
+      alignmentLength: qEnd - qStart,
       targetStart: qStart,
       targetEnd: qEnd,
       queryStart: tStart,
       queryEnd: tEnd,
-      targetLength: qLen, // full allele length
+      targetLength: qLen,
     })
   }
 
@@ -79,41 +73,126 @@ export function parsePAF(pafText: string): AlignmentHit[] {
 }
 
 /**
- * Run MLST analysis for a single FASTA file against a scheme.
- * Uses a single minimap2 call with all alleles from all loci.
+ * Parse BLAST tabular output (-m 8) into AlignmentHit format.
+ *
+ * BLAST tabular columns (0-indexed):
+ *   0: qseqid  1: sseqid  2: pident  3: length
+ *   4: mismatch  5: gapopen  6: qstart  7: qend
+ *   8: sstart  9: send  10: evalue  11: bitscore
+ *
+ * Query = alleles (qseqid), Subject = genome contig (sseqid).
+ * Positions are 1-based in BLAST output.
+ */
+export function parseBlast(blastText: string): AlignmentHit[] {
+  const hits: AlignmentHit[] = []
+  const lines = blastText.trim().split('\n')
+
+  for (const line of lines) {
+    if (!line || line.startsWith('#')) continue
+    const fields = line.split('\t')
+    if (fields.length < 12) continue
+
+    const qseqid = fields[0]   // allele name e.g. "adk_1"
+    const sseqid = fields[1]   // genome contig name
+    const pident = parseFloat(fields[2])  // percent identity
+    const length = parseInt(fields[3], 10)  // alignment length
+    const qstart = parseInt(fields[6], 10)  // 1-based
+    const qend = parseInt(fields[7], 10)
+    const sstart = parseInt(fields[8], 10)
+    const send = parseInt(fields[9], 10)
+
+    if (isNaN(pident) || isNaN(length) || length === 0) continue
+
+    hits.push({
+      targetName: qseqid,           // allele name
+      queryName: sseqid,            // contig name
+      identity: pident,             // already as percentage
+      alignmentLength: qend - qstart + 1,
+      targetStart: qstart - 1,      // convert to 0-based
+      targetEnd: qend,
+      queryStart: Math.min(sstart, send) - 1,
+      queryEnd: Math.max(sstart, send),
+      targetLength: 0,              // looked up from alleleLengths map
+    })
+  }
+
+  return hits
+}
+
+/**
+ * Format a genome FASTA as a BLAST nucleotide database using formatdb.
+ * Returns the three database files as Uint8Arrays.
+ */
+async function formatGenomeDb(
+  genomeFasta: string,
+): Promise<{ nhr: Uint8Array; nin: Uint8Array; nsq: Uint8Array }> {
+  const mod = await createModuleInstance('formatdb')
+  mod.FS.writeFile('/genome.fasta', genomeFasta)
+  mod.callMain(['-i', '/genome.fasta', '-p', 'F', '-n', '/genome'])
+  return {
+    nhr: mod.FS.readFile('/genome.nhr'),
+    nin: mod.FS.readFile('/genome.nin'),
+    nsq: mod.FS.readFile('/genome.nsq'),
+  }
+}
+
+/**
+ * Run blastn (via blastall) — alleles as query, genome DB as subject.
+ * Uses parameters matching tseemann/mlst defaults:
+ *   e-value: 1e-20, ungapped (-g F), no dust filter (-F F), word size 11
+ */
+async function runBlastn(
+  allelesFasta: string,
+  dbFiles: { nhr: Uint8Array; nin: Uint8Array; nsq: Uint8Array },
+): Promise<string> {
+  const mod = await createModuleInstance('blastall')
+  mod.FS.writeFile('/db.nhr', dbFiles.nhr)
+  mod.FS.writeFile('/db.nin', dbFiles.nin)
+  mod.FS.writeFile('/db.nsq', dbFiles.nsq)
+  mod.FS.writeFile('/alleles.fasta', allelesFasta)
+  mod.callMain([
+    '-p', 'blastn',
+    '-i', '/alleles.fasta',
+    '-d', '/db',
+    '-e', '1E-20',
+    '-v', '10000',
+    '-b', '10000',
+    '-m', '8',
+    '-g', 'F',
+    '-F', 'F',
+    '-W', '11',
+  ])
+  return mod._stdout.join('\n')
+}
+
+/**
+ * Run MLST analysis for a single FASTA file against a scheme using BLAST.
  */
 async function analyzeFile(
   fasta: ParsedFasta,
   schemeData: SchemeData,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cli: any,
+  allelesFasta: string,
   alleleLengths: Record<string, number>,
   onProgress: ProgressCallback,
 ): Promise<MLSTResult> {
   const loci = schemeData.scheme.loci
-  onProgress(`${fasta.filename}: aligning...`, 0)
 
-  // Run minimap2: alleles (query) mapped against genome (target)
-  // -c enables base-level alignment for accurate identity
-  // Genome and alleles are already mounted by the caller
-  const pafText = await cli.exec(
-    'minimap2 -c genome.fasta alleles.fasta',
-  )
+  onProgress(`${fasta.filename}: formatting genome database...`, 10)
+  const genomeFasta = mergeContigsToFasta(fasta.filename, fasta.contigs)
+  const dbFiles = await formatGenomeDb(genomeFasta)
 
-  // Parse PAF output
-  const allHits = parsePAF(pafText)
+  onProgress(`${fasta.filename}: aligning alleles...`, 30)
+  const blastOutput = await runBlastn(allelesFasta, dbFiles)
 
-  // Group hits by locus and call alleles
+  const allHits = parseBlast(blastOutput)
+
   const locusResults = loci.map((locus, li) => {
     onProgress(
       `${fasta.filename}: ${locus} (${li + 1}/${loci.length})`,
-      ((li + 1) / loci.length) * 100,
+      30 + ((li + 1) / loci.length) * 70,
     )
-
     const locusPrefix = locus + '_'
-    const locusHits = allHits.filter((h) =>
-      h.targetName.startsWith(locusPrefix),
-    )
+    const locusHits = allHits.filter((h) => h.targetName.startsWith(locusPrefix))
     return callAllele(locus, locusHits, alleleLengths)
   })
 
@@ -128,18 +207,20 @@ async function analyzeFile(
 
 /**
  * Main entry point: run MLST analysis on multiple files.
- * Uses minimap2 via Aioli — a single minimap2 call per genome
- * maps all alleles from all loci simultaneously.
+ * Uses BLAST (blastall + formatdb via WebAssembly) — same approach as tseemann/mlst.
  */
 export async function runMLST(
   files: ParsedFasta[],
   schemeData: SchemeData,
   onProgress: ProgressCallback,
 ): Promise<MLSTResult[]> {
-  onProgress('Initializing minimap2...', 0)
+  onProgress('Loading BLAST...', 0)
 
-  // Initialize Aioli with minimap2
-  const cli = await new Aioli(['minimap2/2.22'])
+  // Preload both WASM modules in parallel
+  await Promise.all([
+    loadWasmModule('blastall'),
+    loadWasmModule('formatdb'),
+  ])
 
   // Concatenate all allele FASTAs and build length map
   const alleleFastaChunks: string[] = []
@@ -148,7 +229,6 @@ export async function runMLST(
   for (const locus of schemeData.scheme.loci) {
     const locusFasta = schemeData.alleleFastas[locus]
     if (!locusFasta) continue
-
     alleleFastaChunks.push(locusFasta)
     const contigs = parseFastaString(locusFasta)
     for (const c of contigs) {
@@ -156,10 +236,7 @@ export async function runMLST(
     }
   }
 
-  const allAllelesFasta = alleleFastaChunks.join('\n')
-
-  // Mount alleles file (shared across all genome files)
-  await cli.mount({ name: 'alleles.fasta', data: allAllelesFasta })
+  const allelesFasta = alleleFastaChunks.join('\n')
 
   const results: MLSTResult[] = []
 
@@ -170,14 +247,10 @@ export async function runMLST(
       onProgress(msg, overallPct)
     }
 
-    // Mount genome for this file
-    const genomeFasta = mergeContigsToFasta(fasta.filename, fasta.contigs)
-    await cli.mount({ name: 'genome.fasta', data: genomeFasta })
-
     const result = await analyzeFile(
       fasta,
       schemeData,
-      cli,
+      allelesFasta,
       alleleLengths,
       fileProgress,
     )

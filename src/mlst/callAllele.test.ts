@@ -41,14 +41,14 @@ describe('callAllele', () => {
     expect(result.identity).toBe(0.99)
   })
 
-  it('returns no_hit for identity below 90%', () => {
-    const hit = makeHit({ targetName: 'aroC_1', identity: 80, alignmentLength: 501 })
+  it('returns no_hit for identity below 95% (tseemann --minid 95)', () => {
+    const hit = makeHit({ targetName: 'aroC_1', identity: 94, alignmentLength: 501 })
     const result = callAllele('aroC', [hit], { aroC_1: 501 })
     expect(result.allele).toBe('no_hit')
   })
 
-  it('returns no_hit for coverage below 90%', () => {
-    const hit = makeHit({ targetName: 'aroC_1', identity: 100, alignmentLength: 400 })
+  it('returns no_hit for coverage below 10% (tseemann --mincov 10)', () => {
+    const hit = makeHit({ targetName: 'aroC_1', identity: 100, alignmentLength: 40 })
     const result = callAllele('aroC', [hit], { aroC_1: 501 })
     expect(result.allele).toBe('no_hit')
   })
