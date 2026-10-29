@@ -2,6 +2,8 @@
 
 > Browser-based Multi-Locus Sequence Typing — no server required.
 
+[Launch MLSTX](https://mlstx.genomicx.org)
+
 MLSTX is a WebAssembly clone of [tseemann/mlst](https://github.com/tseemann/mlst). Drop in one or more bacterial genome assemblies in FASTA format and get sequence type assignments in seconds. Scheme detection is fully automatic — MLSTX identifies the most likely scheme from your assembly, runs the allele alignments, and assigns a sequence type, all in one step. No installation or data upload required.
 
 ## Features

@@ -87,7 +87,7 @@
 .run-button {
   width: 100%;
   padding: 0.75rem 2rem;
-  background: var(--gx-gradient);
+  background: var(--gx-accent);
   color: var(--gx-text-inverted);
   border: none;
   border-radius: var(--gx-radius);
@@ -110,10 +110,11 @@
 }
 
 .run-button:disabled {
-  background: var(--gx-accent);
+  background: var(--gx-disabled-bg);
+  color: var(--gx-disabled-text);
   cursor: not-allowed;
   box-shadow: none;
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .export-button {
@@ -298,7 +299,7 @@
 }
 
 .results-table .filename-cell {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: var(--gx-font-mono);
   font-size: 0.82rem;
   color: var(--gx-text);
 }
@@ -306,19 +307,19 @@
 /* Allele/ST cells */
 .st-cell,
 .allele-cell {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: var(--gx-font-mono);
   font-size: 0.82rem;
 }
 
 /* Status / score cells */
 .scheme-cell {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: var(--gx-font-mono);
   font-size: 0.82rem;
   color: var(--gx-text-muted);
 }
 
 .score-cell {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: var(--gx-font-mono);
   font-size: 0.82rem;
   text-align: right;
 }
@@ -440,7 +441,7 @@
 /* ── Build Tree button ──────────────────────── */
 .tree-button {
   padding: 0.45rem 1rem;
-  background: var(--gx-gradient);
+  background: var(--gx-accent);
   color: var(--gx-text-inverted);
   border: none;
   border-radius: var(--gx-radius);
