@@ -11,6 +11,8 @@ export function callST(
   profiles: STProfile[],
   minscore = 50,
 ): MLSTResult {
+  // Retain the public argument without changing the existing scoring behaviour.
+  void minscore
   const alleles: Record<string, string> = {}
   let noHitCount = 0
   let hasNovel = false
